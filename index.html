@@ -240,6 +240,17 @@
         lng: 11.3522
       },
       {
+        name: "Caffè Zanarini",
+        category: "Bologna Café",
+        image: "caffe-zanarini.jpg",
+        challenge: "This is a dummy writing challenge. You are standing at a bar. Around you, people arrive and leave in under two minutes. Write a character who stays longer than they should — and why.",
+        curiosity: "The founder Enrico Zanarini was a baker's apprentice who built an empire. He started with a single borrowed space in 1930 and eventually ran a chain of bars across Bologna and the Romagna coast. He died in 1948. His son Giorgio turned the Piazza Galvani location into the most fashionable bar in the city — and then moved to Sydney, leaving it all behind.",
+        history: "After the war, Zanarini became a quiet gathering place for Bologna's left-wing intellectuals and artists. The painter Giorgio Morandi drank his coffee here. The communist leader Palmiro Togliatti gave speeches from nearby. Actors, writers and directors passed through, stood at this same bar, looked out at the same square. The city was rebuilding itself and this was one of the places it did it.",
+        description: "Order an espresso. Pay first, the way Italians do. Then take your place at the bar — standing, always standing — and say buongiorno to whoever is behind the counter. They won't stop moving. That's fine. Under the frescoed ceilings of Zanarini, open since 1930, the city has always conducted itself this way — quickly, elegantly, without fuss. Watch the Bolognesi arrive and leave. The professor with his briefcase. The woman who knows exactly what she wants before she reaches the counter. The student who hesitates. Two minutes and they're gone, back into the porticos of Pavaglione, back into the morning. This is not a place to linger. It is a place to absorb. Stand here long enough and you won't need to invent characters — they will pass right through you.",
+        lat: 44.4933,
+        lng: 11.3412
+      },
+      {
         name: "Bari",
         category: "Story Moment",
         description: "Old women making pasta in the street, voices echoing through narrow alleys.",
@@ -265,19 +276,20 @@
     function buildPopup(place) {
       var id = 'popup-' + Math.random().toString(36).substr(2, 9);
       var hasImage = !!place.image;
-      var hasExtras = !!place.challenge;
+      var hasChallenge = !!place.challenge;
+      var hasCuriosity = !!place.curiosity;
+      var hasHistory = !!place.history;
+      var hasExtras = hasChallenge || hasCuriosity || hasHistory;
 
       var tabs = '';
       var contents = '';
 
       if (hasExtras) {
-        tabs =
-          '<div class="popup-tabs">' +
-            '<div class="popup-tab active" onclick="switchTab(\'' + id + '\', \'place\')">📍 Place</div>' +
-            '<div class="popup-tab" onclick="switchTab(\'' + id + '\', \'challenge\')">✍️ Challenge</div>' +
-            '<div class="popup-tab" onclick="switchTab(\'' + id + '\', \'curiosity\')">👁 Look Closer</div>' +
-            '<div class="popup-tab" onclick="switchTab(\'' + id + '\', \'history\')">🕯 The Lives Before Yours</div>' +
-          '</div>';
+        tabs = '<div class="popup-tabs"><div class="popup-tab active" onclick="switchTab(\'' + id + '\', \'place\')">📍 Place</div>';
+        if (hasChallenge) tabs += '<div class="popup-tab" onclick="switchTab(\'' + id + '\', \'challenge\')">✍️ Challenge</div>';
+        if (hasCuriosity) tabs += '<div class="popup-tab" onclick="switchTab(\'' + id + '\', \'curiosity\')">👁 Look Closer</div>';
+        if (hasHistory) tabs += '<div class="popup-tab" onclick="switchTab(\'' + id + '\', \'history\')">🕯 The Lives Before Yours</div>';
+        tabs += '</div>';
       }
 
       if (hasImage) {
@@ -301,16 +313,22 @@
           '</div>';
       }
 
-      if (hasExtras) {
+      if (hasChallenge) {
         contents +=
           '<div id="' + id + '-challenge" class="popup-tab-content simple-content">' +
             '<div class="tab-label">✍️ Writing Challenge</div>' +
             '<div class="tab-body">' + place.challenge + '</div>' +
-          '</div>' +
+          '</div>';
+      }
+      if (hasCuriosity) {
+        contents +=
           '<div id="' + id + '-curiosity" class="popup-tab-content simple-content">' +
             '<div class="tab-label">👁 Look Closer</div>' +
             '<div class="tab-body">' + place.curiosity + '</div>' +
-          '</div>' +
+          '</div>';
+      }
+      if (hasHistory) {
+        contents +=
           '<div id="' + id + '-history" class="popup-tab-content simple-content">' +
             '<div class="tab-label">🕯 The Lives Before Yours</div>' +
             '<div class="tab-body">' + place.history + '</div>' +
