@@ -33,20 +33,14 @@
       color: #555;
       margin-top: 4px;
     }
-
-    /* Base card — no image, compact */
     .popup-card {
       max-width: 280px;
       min-width: 220px;
     }
-
-    /* Card with image — horizontal layout */
     .popup-card.has-image {
       max-width: 480px;
       min-width: 400px;
     }
-
-    /* Tabs */
     .popup-tabs {
       display: flex;
       border-bottom: 2px solid #eee;
@@ -74,8 +68,6 @@
       gap: 12px;
       align-items: flex-start;
     }
-
-    /* Challenge tab */
     .popup-tab-content.challenge-content {
       display: none;
       flex-direction: column;
@@ -97,7 +89,6 @@
       color: #333;
       font-style: italic;
     }
-
     .popup-card.has-image img {
       width: 180px;
       height: 220px;
@@ -208,6 +199,33 @@
         lng: 11.3447
       },
       {
+        name: "Piazza Minghetti",
+        category: "Bologna Spot",
+        image: "piazza-minghetti.jpg",
+        challenge: "This is a dummy writing challenge. You weren't looking for this place. Write about a character who finds something they weren't looking for — and what it changes.",
+        description: "You weren't looking for it. You were walking under the porticos of Via Farini — some of the most beautiful in Bologna, all arches and warm stone and the particular light that bounces between column and pavement — and you just kept going, because you couldn't stop. And then the street opens, quietly, into Piazza Minghetti. No landmark. No crowd. Just a small, elegant square that seems to have nothing to declare. Sit down anyway. Order something. Watch the Bolognesi pass without hurry. This is not a place that performs. It simply exists, with the confidence of somewhere that has never needed to impress anyone. Write here. Nobody will bother you.",
+        lat: 44.4931,
+        lng: 11.3408
+      },
+      {
+        name: "Piazza Santo Stefano",
+        category: "Bologna Spot",
+        image: "piazza-santo-stefano.jpg",
+        challenge: "This is a dummy writing challenge. Every door here opens into a different century. Write a scene where your character steps through a door and arrives somewhere unexpected in time.",
+        description: "The square is triangular, paved with river pebbles, and feels like it was left over from another century — which in a way it was. The complex of seven churches at the far end has been here since the 5th century, each door opening into a different age. You don't need to go inside. Just stand in the square as the evening settles, when the bars open and the locals come out and the stone turns gold in the last light. Something about this place makes conversation feel more honest and silence feel less lonely. It is one of those rare spots where the past doesn't feel heavy — it just sits beside you, quietly, like an old friend.",
+        lat: 44.4927,
+        lng: 11.3488
+      },
+      {
+        name: "Conservatorio G.B. Martini",
+        category: "Bologna Spot",
+        image: "conservatorio-bologna.jpg",
+        challenge: "This is a dummy writing challenge. You can hear someone practicing behind a closed door. Write the scene on the other side — who is playing, what are they feeling, what are they trying to get right.",
+        description: "Step through the gate and the city disappears. The courtyard of the Conservatorio Martini is all arches and old stone, a former convent where students have been practicing since 1804 — where Rossini himself once walked. Stand still for a moment and listen. Somewhere above you a violin is searching for something. A piano starts, stops, starts again. The sound floats down into the courtyard and dissolves before it reaches you. This is what it feels like to be inside someone else's devotion — that particular quality of effort that hasn't become performance yet. Bring your notebook. Whatever you write here will have music in it whether you intend it or not.",
+        lat: 44.4966,
+        lng: 11.3522
+      },
+      {
         name: "Bari",
         category: "Story Moment",
         description: "Old women making pasta in the street, voices echoing through narrow alleys.",
@@ -246,7 +264,6 @@
           '</div>';
       }
 
-      // Place tab content
       if (hasImage) {
         contents +=
           '<div id="' + id + '-place" class="popup-tab-content active">' +
@@ -268,7 +285,6 @@
           '</div>';
       }
 
-      // Challenge tab content
       if (hasChallenge) {
         contents +=
           '<div id="' + id + '-challenge" class="popup-tab-content challenge-content">' +
@@ -283,16 +299,12 @@
     window.switchTab = function(id, tab) {
       var card = document.getElementById(id);
       if (!card) return;
-
-      // Update tab buttons
       card.querySelectorAll('.popup-tab').forEach(function(t) {
         t.classList.remove('active');
       });
       card.querySelectorAll('.popup-tab-content').forEach(function(c) {
         c.classList.remove('active');
       });
-
-      // Activate selected
       var activeTab = card.querySelector('[onclick*="\'' + tab + '\'"]');
       var activeContent = document.getElementById(id + '-' + tab);
       if (activeTab) activeTab.classList.add('active');
