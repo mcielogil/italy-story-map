@@ -25,19 +25,16 @@
 
     body { font-family: 'DM Sans', sans-serif; background: var(--black); overflow: hidden; }
 
-    /* MAP */
     #map {
       position: absolute;
       top: 0; right: 0; bottom: 0;
       left: var(--sidebar-w);
     }
 
-    /* Push the map colours — vivid, saturated, warm */
     .leaflet-tile-pane {
       filter: saturate(1.6) contrast(1.1) brightness(0.96) hue-rotate(-5deg);
     }
 
-    /* OPENING SCREEN */
     #opening {
       position: fixed;
       inset: 0;
@@ -126,7 +123,6 @@
     .opening-btn:hover { background: var(--red-dark); transform: translateY(-1px); }
     .opening-btn:active { transform: translateY(0); }
 
-    /* SIDEBAR */
     #sidebar {
       position: absolute;
       top: 0; left: 0; bottom: 0;
@@ -264,7 +260,6 @@
       line-height: 1.7;
     }
 
-    /* LEAFLET OVERRIDES */
     .leaflet-popup-content-wrapper {
       background: var(--white);
       border: none;
@@ -316,7 +311,6 @@
       border-radius: 0 !important;
     }
 
-    /* POPUP */
     .popup-card { max-width: 290px; min-width: 230px; }
     .popup-card.has-image { max-width: 520px; min-width: 440px; }
 
@@ -409,13 +403,13 @@
       font-weight: 400;
     }
 
- .popup-card.has-image img {
-  width: 180px;
-  height: 220px;
-  object-fit: cover;
-  flex-shrink: 0;
-  display: block;
-}
+    .popup-card.has-image img {
+      width: 180px;
+      height: 220px;
+      object-fit: cover;
+      flex-shrink: 0;
+      display: block;
+    }
 
     .popup-inner { padding: 20px; flex: 1; min-width: 0; background: var(--white); }
 
@@ -433,7 +427,6 @@
 </head>
 <body>
 
-  <!-- OPENING SCREEN -->
   <div id="opening">
     <div class="opening-inner">
       <div class="opening-eyebrow">A writer's map of Italy</div>
@@ -444,7 +437,6 @@
     </div>
   </div>
 
-  <!-- SIDEBAR -->
   <div id="sidebar">
     <div class="sidebar-top">
       <div class="sidebar-eyebrow">A writer's map</div>
@@ -467,19 +459,11 @@
             <span class="filter-pip" style="background:#9b4f2e"></span>
             Restaurants
           </button>
-          <button class="filter-btn active" onclick="toggleFilter(this,'City')" data-filter="City">
-            <span class="filter-pip" style="background:#4a6741"></span>
-            Cities
-          </button>
-          <button class="filter-btn active" onclick="toggleFilter(this,'other')" data-filter="other">
-            <span class="filter-pip" style="background:#888"></span>
-            Other spots
-          </button>
         </div>
       </div>
       <div>
         <div class="sidebar-section-label">About this map</div>
-        <div class="sidebar-about">A curated guide to Italy through the senses. Every place was chosen because it opens something up.</div>
+        <div class="sidebar-about">A curated guide to Bologna through the senses. Every place was chosen because it opens something up.</div>
       </div>
     </div>
     <div class="sidebar-footer">
@@ -498,7 +482,7 @@
       setTimeout(function() { o.style.display = 'none'; }, 1000);
     }
 
-    var map = L.map('map', { zoomControl: false }).setView([43.5, 12.5], 6);
+    var map = L.map('map', { zoomControl: false }).setView([44.4949, 11.3426], 13);
     L.control.zoom({ position: 'bottomright' }).addTo(map);
 
     L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
@@ -509,11 +493,7 @@
     var categoryColors = {
       'Bologna Spot': '#d4321c',
       'Bologna Café': '#c8920a',
-      'Bologna Restaurant': '#9b4f2e',
-      'City': '#4a6741',
-      'Writing Spot': '#888',
-      'Story Moment': '#888',
-      'Quiet Place': '#888'
+      'Bologna Restaurant': '#9b4f2e'
     };
 
     function createPin(category) {
@@ -534,16 +514,9 @@
     }
 
     var allMarkers = [];
-    var activeFilters = new Set(['Bologna Spot','Bologna Café','Bologna Restaurant','City','other']);
+    var activeFilters = new Set(['Bologna Spot','Bologna Café','Bologna Restaurant']);
 
     var places = [
-      
-      {
-        name: "Bologna",
-        category: "City",
-        description: "A city of porticoes, students, political undercurrents, and beautiful restraint. The kind of place that feels lived in rather than staged.",
-        lat: 44.5058, lng: 11.3429
-      },
       {
         name: "Piazza Maggiore",
         category: "Bologna Spot",
@@ -605,6 +578,26 @@
         lat: 44.4966, lng: 11.3522
       },
       {
+        name: "Biblioteca Salaborsa",
+        category: "Bologna Spot",
+        image: "salaborsa.jpg",
+        challenge: "You are sitting above two thousand years of other people's lives. Every story exists on top of an older one. Write the opening paragraph of something that begins not now, but just before now — the moment before your character arrives somewhere that will change them.",
+        curiosity: "Before it was a library, this building was a telegraph office, then a royal post office, then a sports hall where Bolognesi came to watch boxing and basketball matches, then a permanent puppet theatre. It became a library in 2001. The building has never stopped being used — it has simply kept changing what it is for. The ruins underneath it have been there since 189 BC and have never moved at all.",
+        history: "Bologna was founded as Bononia by the Romans in 189 BC, built directly on top of Etruscan Felsina, which was itself built on Villanovan settlements from the 7th century BC. Three civilisations, stacked. When you sit in Salaborsa and look through the glass floor, you are looking at all of them at once — streets, wells, foundations, the ordinary infrastructure of lives that had no idea anyone would ever be sitting above them in a library reading about the Renaissance.",
+        description: "Walk through the entrance off Piazza del Nettuno and stop. Look down. Beneath the glass floor, two thousand years of city are visible — Roman streets, wells, foundations, all of it still there under your feet. This is a library built on top of everything that came before it. Go to the first gallery on your right, where the newspaper room is. Find one of the low 1960s armchairs. Sit. The light comes from high windows, the ceiling is cast iron and glass, and the room has the particular quiet of a place people have been thinking in for a long time. If you want to write, go up to the first floor and find a table with a lamp — most have sockets. Bring your notebook anyway. Some sentences are better written by hand in a place like this, where the ground beneath you is made of other people's centuries.",
+        lat: 44.4942, lng: 11.3422
+      },
+      {
+        name: "Via Saragozza",
+        category: "Bologna Spot",
+        image: "via-saragozza.jpg",
+        challenge: "You turn around and see a perspective that stretches back further than you expected. Write a scene where a character turns around — physically or otherwise — and sees something they had been walking away from.",
+        curiosity: "The 666 arches of the San Luca portico that begin just beyond Porta Saragozza were not an accident. The number was chosen deliberately — 666, the devil's number, because the long winding shape of the portico resembles a serpent. It ends at the foot of the Madonna's sanctuary. The devil, crushed underfoot. The whole structure is a theological argument made in brick and mortar, nearly four kilometres long.",
+        history: "Porta Saragozza was built in the 13th century as part of Bologna's third set of medieval walls. The walls themselves were demolished in 1902 to make room for the expanding city, but the gates were left standing — twelve of them, scattered around Bologna like punctuation marks in a sentence the city forgot to finish. Via Saragozza has been a road out of Bologna since the Roman era. Every person who ever left this city heading southwest walked under these arches.",
+        description: "Walk southwest from the centre along Via Saragozza and let the city change register around you. The porticos here are wider than the ones in the historic centre — more generous, more breathing, the arches taller and the light different. Students cycle past. A woman carries groceries. Someone is just standing, looking at nothing in particular. This is the city lived in rather than visited. Keep walking until you reach Porta Saragozza, the 13th century gate at the edge of the old walls. Pass through it. Then stop and turn around. What you see will stay with you — a long, unbroken perspective of terracotta buildings, arch after arch receding toward the city, the whole street framed in warm red and amber like something out of a painting you didn't know existed. This is the view that makes you understand why Bologna looks the way it does. Stand there as long as you need. On the other side of the gate, the portico continues for another 3.8 kilometres all the way to San Luca — but that is another walk, another day. Today, this moment is enough.",
+        lat: 44.4902, lng: 11.3316
+      },
+      {
         name: "Caffè Zanarini",
         category: "Bologna Café",
         image: "caffe-zanarini.jpg",
@@ -623,29 +616,6 @@
         history: "Vito Pagani opened this place in 1949 in a neighbourhood built for factory workers. His son Paolo inherited it and inherited the regulars — Guccini, Dalla, Vecchioni, De André, Benigni, Dario Fo. One night Fabrizio De André left drunk, drove his Citroën DS into something a kilometre down the road, and couldn't remember his own name. The police found the trattoria's name on his chicken wrapper and called Paolo to come and get him. That is the kind of place this is — the kind where you are known, where someone will come and find you, where the night has no fixed ending.",
         description: "It's not in the centre. That's the point. Take the twenty minute walk to Cirenaica, the old working class neighbourhood just outside the walls, and find Via Musolesi. Red and white checked tablecloths. Green curtains. Neon light. The lasagne arrives without ceremony and it is perfect. This is where Guccini, Dalla, De André, Gaber and Fo used to eat, drink, argue about politics and play cards until the early hours. The walls still have their photographs. The chairs haven't changed. Run now by Vito's granddaughter, the place has no interest in becoming anything other than what it always was. Order the tagliatelle. Order the wine. Stay late.",
         lat: 44.4902, lng: 11.3598
-      },
-      {
-        name: "Biblioteca Salaborsa",
-        category: "Bologna Spot",
-        image: "salaborsa.jpg",
-        challenge: "You are sitting above two thousand years of other people's lives. Every story exists on top of an older one. Write the opening paragraph of something that begins not now, but just before now — the moment before your character arrives somewhere that will change them.",
-        curiosity: "Before it was a library, this building was a telegraph office, then a royal post office, then a sports hall where Bolognesi came to watch boxing and basketball matches, then a permanent puppet theatre. It became a library in 2001. The building has never stopped being used — it has simply kept changing what it is for. The ruins underneath it have been there since 189 BC and have never moved at all.",
-        history: "Bologna was founded as Bononia by the Romans in 189 BC, built directly on top of Etruscan Felsina, which was itself built on Villanovan settlements from the 7th century BC. Three civilisations, stacked. When you sit in Salaborsa and look through the glass floor, you are looking at all of them at once — streets, wells, foundations, the ordinary infrastructure of lives that had no idea anyone would ever be sitting above them in a library reading about the Renaissance.",
-        description: "Walk through the entrance off Piazza del Nettuno and stop. Look down. Beneath the glass floor, two thousand years of city are visible — Roman streets, wells, foundations, all of it still there under your feet. This is a library built on top of everything that came before it. Go to the first gallery on your right, where the newspaper room is. Find one of the low 1960s armchairs. Sit. The light comes from high windows, the ceiling is cast iron and glass, and the room has the particular quiet of a place people have been thinking in for a long time. If you want to write, go up to the first floor and find a table with a lamp — most have sockets. Bring your notebook anyway. Some sentences are better written by hand in a place like this, where the ground beneath you is made of other people's centuries.",
-        lat: 44.4942,
-        lng: 11.3422
-      },
-      {
-        name: "Via Saragozza",
-        category: "Bologna Spot",
-        image: "via-saragozza.jpg",
-        challenge: "You turn around and see a perspective that stretches back further than you expected. Write a scene where a character turns around — physically or otherwise — and sees something they had been walking away from.",
-        curiosity: "The 666 arches of the San Luca portico that begin just beyond Porta Saragozza were not an accident. The number was chosen deliberately — 666, the devil's number, because the long winding shape of the portico resembles a serpent. It ends at the foot of the Madonna's sanctuary. The devil, crushed underfoot. The whole structure is a theological argument made in brick and mortar, nearly four kilometres long.",
-        history: "Porta Saragozza was built in the 13th century as part of Bologna's third set of medieval walls. The walls themselves were demolished in 1902 to make room for the expanding city, but the gates were left standing — twelve of them, scattered around Bologna like punctuation marks in a sentence the city forgot to finish. Via Saragozza has been a road out of Bologna since the Roman era. Every person who ever left this city heading southwest walked under these arches.",
-        description: "Walk southwest from the centre along Via Saragozza and let the city change register around you. The porticos here are wider than the ones in the historic centre — more generous, more breathing, the arches taller and the light different. Students cycle past. A woman carries groceries. Someone is just standing, looking at nothing in particular. This is the city lived in rather than visited. Keep walking until you reach Porta Saragozza, the 13th century gate at the edge of the old walls. Pass through it. Then stop and turn around. What you see will stay with you — a long, unbroken perspective of terracotta buildings, arch after arch receding toward the city, the whole street framed in warm red and amber like something out of a painting you didn't know existed. This is the view that makes you understand why Bologna looks the way it does. Stand there as long as you need. On the other side of the gate, the portico continues for another 3.8 kilometres all the way to San Luca — but that is another walk, another day. Today, this moment is enough.",
-        lat: 44.4902,
-        lng: 11.3316
-
       }
     ];
 
