@@ -4,19 +4,15 @@
   <title>Italy Story Map</title>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-
   <style>
     body {
       margin: 0;
       font-family: Arial, sans-serif;
     }
-
     #map {
       height: 100vh;
     }
-
     #title-box {
       position: absolute;
       top: 16px;
@@ -28,82 +24,62 @@
       box-shadow: 0 2px 10px rgba(0,0,0,0.15);
       max-width: 280px;
     }
-
     .title {
       font-size: 20px;
       font-weight: bold;
     }
-
     .subtitle {
       font-size: 14px;
       color: #555;
       margin-top: 4px;
     }
 
-    .leaflet-popup-content {
-      margin: 14px 16px;
-      width: 520px !important;
-    }
-
+    /* Base card — no image, compact */
     .popup-card {
-      display: flex;
-      gap: 14px;
-      align-items: flex-start;
-      width: 100%;
-      max-width: 520px;
+      max-width: 280px;
+      min-width: 220px;
     }
 
-    .popup-card img {
-      width: 190px;
+    /* Card with image — horizontal layout */
+    .popup-card.has-image {
+      display: flex;
+      flex-direction: row;
+      gap: 12px;
+      align-items: flex-start;
+      max-width: 460px;
+      min-width: 380px;
+    }
+
+    .popup-card.has-image img {
+      width: 150px;
       height: 150px;
       object-fit: cover;
-      border-radius: 10px;
-      display: block;
+      border-radius: 8px;
       flex-shrink: 0;
+      display: block;
     }
 
     .popup-text {
       flex: 1;
-      min-width: 0;
     }
-
     .popup-text h3 {
-      margin: 0 0 6px 0;
-      font-size: 24px;
-      line-height: 1.15;
+      margin: 0 0 5px 0;
+      font-size: 16px;
+      line-height: 1.2;
     }
-
     .popup-category {
-      font-size: 13px;
+      font-size: 12px;
       color: #777;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
       font-style: italic;
     }
-
     .popup-text p {
+      font-size: 13px;
+      line-height: 1.45;
       margin: 0;
-      font-size: 15px;
-      line-height: 1.55;
-      color: #222;
-    }
-
-    .simple-card h3 {
-      margin: 0 0 6px 0;
-      font-size: 20px;
-    }
-
-    .simple-card .popup-category {
-      margin-bottom: 8px;
-    }
-
-    .simple-card p {
-      margin: 0;
-      font-size: 14px;
-      line-height: 1.5;
     }
   </style>
 </head>
-
 <body>
 
   <div id="title-box">
@@ -114,7 +90,6 @@
   <div id="map"></div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
   <script>
     var map = L.map('map').setView([43.8, 11.8], 6);
 
@@ -155,14 +130,14 @@
         name: "Bologna",
         category: "City",
         description: "A city of porticoes, students, political undercurrents, and beautiful restraint. The kind of place that feels lived in rather than staged.",
-        lat: 44.4949,
+        lat: 44.4970,
         lng: 11.3426
       },
       {
         name: "Piazza Maggiore",
         category: "Bologna Spot",
-        image: "piazza-maggiore.jpg",
-        description: "Sit on the stone steps and let the square unfold slowly. Students cross in groups, someone pauses mid-conversation, a bicycle cuts through the open space, and the whole plaza feels like a stage for ordinary life. Stay long enough and the details start writing the scene for you.",
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Bologna_Piazza_Maggiore_2009.jpg/1280px-Bologna_Piazza_Maggiore_2009.jpg",
+        description: "Sit on the worn stone steps at the edge of Piazza Maggiore and do nothing for a while. Let the square reveal itself slowly. Students cross in loose groups, a bicycle cuts through the open space, someone is always arriving, someone is always leaving. Stay long enough and the place begins to feel theatrical in the best way. This is not a place to hurry through. It is a place to observe youth, movement, tension, beauty, and the small human scenes that make a story feel alive.",
         lat: 44.4937,
         lng: 11.3431
       },
@@ -191,11 +166,12 @@
 
     places.forEach(function(place) {
       var marker = L.marker([place.lat, place.lng]).addTo(map);
-      var popupContent = "";
+
+      var popupContent;
 
       if (place.image) {
         popupContent =
-          "<div class='popup-card'>" +
+          "<div class='popup-card has-image'>" +
             "<img src='" + place.image + "' alt='" + place.name + "'>" +
             "<div class='popup-text'>" +
               "<h3>" + place.name + "</h3>" +
@@ -205,16 +181,21 @@
           "</div>";
       } else {
         popupContent =
-          "<div class='simple-card'>" +
-            "<h3>" + place.name + "</h3>" +
-            "<div class='popup-category'>" + place.category + "</div>" +
-            "<p>" + place.description + "</p>" +
+          "<div class='popup-card'>" +
+            "<div class='popup-text'>" +
+              "<h3>" + place.name + "</h3>" +
+              "<div class='popup-category'>" + place.category + "</div>" +
+              "<p>" + place.description + "</p>" +
+            "</div>" +
           "</div>";
       }
 
-      marker.bindPopup(popupContent);
+      var popupOptions = place.image
+        ? { maxWidth: 500, minWidth: 400 }
+        : { maxWidth: 300 };
+
+      marker.bindPopup(popupContent, popupOptions);
     });
   </script>
-
 </body>
 </html>
