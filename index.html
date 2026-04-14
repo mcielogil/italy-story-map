@@ -6,28 +6,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --ink: #1c1a14;
-      --ink-soft: #2a2618;
-      --ink-mid: #3a3526;
-      --parchment: #f2ead8;
-      --parchment-mid: #d4c9a8;
-      --olive: #3d4a2e;
-      --olive-mid: #556b3d;
-      --gold: #b8953a;
-      --gold-light: #d4ae5a;
-      --gold-pale: #e8d49a;
-      --cream: #f8f3e8;
-      --muted: #7a7260;
-      --terracotta: #9b4f2e;
-      --sidebar-w: 260px;
+      --black: #0f0e0c;
+      --off-black: #1a1916;
+      --white: #fafaf8;
+      --off-white: #f4f2ed;
+      --red: #d4321c;
+      --red-dark: #a8260f;
+      --red-pale: #fdf0ed;
+      --gold: #c8920a;
+      --olive: #4a6741;
+      --sidebar-w: 280px;
     }
 
-    body { font-family: 'Jost', sans-serif; background: var(--ink); overflow: hidden; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--black); overflow: hidden; }
 
     /* MAP */
     #map {
@@ -36,32 +32,9 @@
       left: var(--sidebar-w);
     }
 
-    /* Watercolour tile warmth */
+    /* Push the map colours — vivid, saturated, warm */
     .leaflet-tile-pane {
-      filter: sepia(45%) saturate(1.2) brightness(0.88) hue-rotate(5deg) contrast(1.05);
-    }
-
-    /* Grain overlay on map */
-    #map::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      z-index: 400;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-      background-size: 256px 256px;
-      opacity: 0.18;
-      mix-blend-mode: multiply;
-    }
-
-    /* Vignette on map */
-    #map::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      z-index: 401;
-      background: radial-gradient(ellipse at center, transparent 55%, rgba(28,26,20,0.45) 100%);
+      filter: saturate(1.6) contrast(1.1) brightness(0.96) hue-rotate(-5deg);
     }
 
     /* OPENING SCREEN */
@@ -69,11 +42,11 @@
       position: fixed;
       inset: 0;
       z-index: 9999;
-      background: var(--ink);
+      background: var(--black);
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: opacity 1s ease;
+      transition: opacity 0.9s ease;
     }
 
     #opening.fade-out { opacity: 0; pointer-events: none; }
@@ -81,106 +54,77 @@
     .opening-inner {
       display: flex;
       flex-direction: column;
-      align-items: center;
-      gap: 22px;
-      max-width: 600px;
-      padding: 0 40px;
-      animation: riseIn 1.4s cubic-bezier(0.16,1,0.3,1) forwards;
+      align-items: flex-start;
+      gap: 0;
+      max-width: 720px;
+      padding: 0 48px;
+      animation: riseIn 1.2s cubic-bezier(0.16,1,0.3,1) forwards;
     }
 
     @keyframes riseIn {
-      from { opacity: 0; transform: translateY(30px); }
+      from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    .opening-ornament {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      color: var(--gold);
-    }
-
-    .opening-ornament-line {
-      width: 48px;
-      height: 1px;
-      background: linear-gradient(to right, transparent, var(--gold));
-    }
-
-    .opening-ornament-line.right {
-      background: linear-gradient(to left, transparent, var(--gold));
-    }
-
-    .opening-ornament-dot {
-      width: 4px;
-      height: 4px;
-      border-radius: 50%;
-      background: var(--gold);
-    }
-
     .opening-eyebrow {
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 500;
-      letter-spacing: 0.25em;
+      letter-spacing: 0.22em;
       text-transform: uppercase;
-      color: var(--gold);
+      color: var(--red);
+      margin-bottom: 20px;
     }
 
     .opening-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(52px, 8vw, 96px);
-      font-weight: 300;
-      color: var(--parchment);
-      text-align: center;
-      line-height: 1.0;
-      letter-spacing: -0.02em;
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(56px, 9vw, 112px);
+      font-weight: 700;
+      color: var(--white);
+      line-height: 0.95;
+      letter-spacing: -0.03em;
+      margin-bottom: 32px;
     }
 
     .opening-title em {
       font-style: italic;
-      color: var(--gold-light);
+      font-weight: 400;
+      color: var(--red);
+    }
+
+    .opening-rule {
+      width: 100%;
+      height: 1px;
+      background: #2a2926;
+      margin-bottom: 32px;
     }
 
     .opening-subtitle {
-      font-family: 'Cormorant Garamond', serif;
+      font-family: 'Playfair Display', serif;
       font-style: italic;
-      font-size: clamp(14px, 2vw, 18px);
-      font-weight: 300;
-      color: var(--muted);
-      text-align: center;
-      line-height: 1.8;
-      max-width: 420px;
+      font-size: clamp(16px, 2.2vw, 22px);
+      font-weight: 400;
+      color: #6a6860;
+      line-height: 1.7;
+      max-width: 520px;
+      margin-bottom: 40px;
     }
 
     .opening-btn {
-      margin-top: 8px;
-      padding: 14px 52px;
-      background: transparent;
-      border: 1px solid var(--gold);
-      color: var(--gold);
-      font-family: 'Jost', sans-serif;
-      font-size: 10px;
+      padding: 16px 48px;
+      background: var(--red);
+      border: none;
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px;
       font-weight: 500;
-      letter-spacing: 0.22em;
+      letter-spacing: 0.18em;
       text-transform: uppercase;
       cursor: pointer;
-      transition: all 0.4s ease;
-      position: relative;
-      overflow: hidden;
+      transition: background 0.3s ease, transform 0.2s ease;
     }
 
-    .opening-btn::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: var(--gold);
-      transform: scaleX(0);
-      transform-origin: left;
-      transition: transform 0.4s ease;
-    }
-
-    .opening-btn:hover::before { transform: scaleX(1); }
-    .opening-btn span { position: relative; z-index: 1; transition: color 0.4s; }
-    .opening-btn:hover span { color: var(--ink); }
+    .opening-btn:hover { background: var(--red-dark); transform: translateY(-1px); }
+    .opening-btn:active { transform: translateY(0); }
 
     /* SIDEBAR */
     #sidebar {
@@ -188,64 +132,77 @@
       top: 0; left: 0; bottom: 0;
       z-index: 1000;
       width: var(--sidebar-w);
-      background: var(--ink);
-      border-right: 1px solid var(--ink-mid);
+      background: var(--black);
       display: flex;
       flex-direction: column;
       overflow: hidden;
     }
 
     .sidebar-top {
-      padding: 32px 24px 24px;
-      border-bottom: 1px solid var(--ink-mid);
+      padding: 36px 28px 28px;
+      border-bottom: 1px solid #1e1d1a;
+    }
+
+    .sidebar-eyebrow {
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 10px;
     }
 
     .sidebar-brand {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 26px;
-      font-weight: 300;
-      color: var(--parchment);
-      line-height: 1.1;
-      letter-spacing: -0.01em;
-      margin-bottom: 6px;
+      font-family: 'Playfair Display', serif;
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--white);
+      line-height: 0.95;
+      letter-spacing: -0.02em;
+      margin-bottom: 10px;
     }
 
     .sidebar-brand em {
       font-style: italic;
-      color: var(--gold-light);
+      font-weight: 400;
+      color: var(--red);
+      display: block;
     }
 
     .sidebar-tagline {
-      font-family: 'Cormorant Garamond', serif;
+      font-family: 'Playfair Display', serif;
       font-style: italic;
-      font-size: 12px;
-      font-weight: 300;
-      color: var(--muted);
+      font-size: 13px;
+      font-weight: 400;
+      color: #4a4944;
       line-height: 1.5;
     }
 
     .sidebar-body {
-      padding: 24px;
+      padding: 28px;
       flex: 1;
       overflow-y: auto;
       scrollbar-width: none;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
     }
 
     .sidebar-body::-webkit-scrollbar { display: none; }
 
-    .sidebar-label {
+    .sidebar-section-label {
       font-size: 9px;
       font-weight: 500;
       letter-spacing: 0.2em;
       text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 12px;
+      color: #3a3934;
+      margin-bottom: 10px;
     }
 
     .filter-list {
       display: flex;
       flex-direction: column;
-      gap: 1px;
+      gap: 2px;
     }
 
     .filter-btn {
@@ -256,110 +213,142 @@
       border: none;
       cursor: pointer;
       padding: 8px 10px;
-      font-family: 'Jost', sans-serif;
-      font-size: 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
       font-weight: 300;
-      color: var(--ink-mid);
+      color: #3a3934;
       text-align: left;
       transition: all 0.2s;
-      letter-spacing: 0.03em;
-      border-radius: 1px;
+      letter-spacing: 0.01em;
+      border-left: 2px solid transparent;
     }
 
-    .filter-btn.active { color: var(--parchment-mid); background: var(--ink-soft); }
-    .filter-btn:hover { color: var(--gold-light); }
+    .filter-btn.active {
+      color: var(--white);
+      border-left-color: var(--red);
+      background: #161512;
+    }
+
+    .filter-btn:hover { color: var(--white); }
 
     .filter-pip {
       width: 7px;
       height: 7px;
       border-radius: 50%;
       flex-shrink: 0;
-      opacity: 0.4;
+      opacity: 0.5;
       transition: opacity 0.2s;
     }
 
     .filter-btn.active .filter-pip { opacity: 1; }
 
-    .sidebar-divider {
-      height: 1px;
-      background: var(--ink-mid);
-      margin: 20px 0;
+    .sidebar-about {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: 13px;
+      font-weight: 400;
+      color: #3a3934;
+      line-height: 1.8;
     }
 
     .sidebar-footer {
-      padding: 20px 24px;
-      border-top: 1px solid var(--ink-mid);
+      padding: 20px 28px;
+      border-top: 1px solid #1e1d1a;
     }
 
     .sidebar-footer-text {
-      font-family: 'Cormorant Garamond', serif;
+      font-family: 'Playfair Display', serif;
       font-style: italic;
       font-size: 12px;
-      color: #3a3526;
+      color: #2a2926;
       line-height: 1.7;
     }
 
     /* LEAFLET OVERRIDES */
     .leaflet-popup-content-wrapper {
-      background: var(--ink);
-      border: 1px solid var(--ink-mid);
+      background: var(--white);
+      border: none;
       border-radius: 0 !important;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(184,149,58,0.1);
+      box-shadow: 0 24px 64px rgba(0,0,0,0.2), 0 4px 16px rgba(0,0,0,0.1);
       padding: 0;
     }
 
     .leaflet-popup-content { margin: 0 !important; padding: 0; }
     .leaflet-popup-tip-container { display: none; }
+
     .leaflet-popup-close-button {
-      color: var(--ink-mid) !important;
+      color: #aaa !important;
       font-size: 18px !important;
-      top: 6px !important;
-      right: 8px !important;
+      top: 8px !important;
+      right: 10px !important;
       z-index: 10;
     }
-    .leaflet-popup-close-button:hover { color: var(--parchment) !important; }
+
+    .leaflet-popup-close-button:hover { color: var(--black) !important; }
 
     .leaflet-control-zoom {
-      border: 1px solid var(--ink-mid) !important;
+      border: none !important;
       border-radius: 0 !important;
-      box-shadow: none !important;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.15) !important;
     }
 
     .leaflet-control-zoom a {
-      background: var(--ink) !important;
-      color: var(--muted) !important;
-      border-bottom: 1px solid var(--ink-mid) !important;
+      background: var(--white) !important;
+      color: var(--black) !important;
+      border-bottom: 1px solid #eee !important;
       border-radius: 0 !important;
-      font-family: 'Jost', sans-serif !important;
+      font-family: 'DM Sans', sans-serif !important;
       font-weight: 300 !important;
-      width: 28px !important;
-      height: 28px !important;
-      line-height: 28px !important;
+      width: 32px !important;
+      height: 32px !important;
+      line-height: 32px !important;
     }
 
     .leaflet-control-zoom a:hover {
-      background: var(--ink-soft) !important;
-      color: var(--gold) !important;
+      background: var(--red) !important;
+      color: var(--white) !important;
     }
 
-    .leaflet-attribution-flag { display: none !important; }
-
     .leaflet-control-attribution {
-      background: rgba(28,26,20,0.8) !important;
-      color: #3a3526 !important;
+      background: rgba(250,250,248,0.85) !important;
+      color: #aaa !important;
       font-size: 9px !important;
-      font-family: 'Jost', sans-serif !important;
       border-radius: 0 !important;
     }
 
-    /* POPUP CARD */
-    .popup-card { max-width: 280px; min-width: 220px; }
-    .popup-card.has-image { max-width: 500px; min-width: 440px; }
+    /* POPUP */
+    .popup-card { max-width: 290px; min-width: 230px; }
+    .popup-card.has-image { max-width: 520px; min-width: 440px; }
+
+    .popup-header {
+      background: var(--black);
+      padding: 16px 20px 14px;
+    }
+
+    .popup-header h3 {
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      font-size: 20px;
+      color: var(--white);
+      line-height: 1.1;
+      letter-spacing: -0.01em;
+      margin-bottom: 3px;
+    }
+
+    .popup-category {
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--red);
+      font-family: 'DM Sans', sans-serif;
+    }
 
     .popup-tabs {
       display: flex;
-      border-bottom: 1px solid var(--ink-mid);
-      padding: 0 18px;
+      border-bottom: 1px solid #ebe9e4;
+      padding: 0 20px;
+      background: var(--white);
       overflow-x: auto;
       scrollbar-width: none;
     }
@@ -367,25 +356,25 @@
     .popup-tabs::-webkit-scrollbar { display: none; }
 
     .popup-tab {
-      padding: 12px 8px;
+      padding: 10px 8px;
       font-size: 9px;
       font-weight: 500;
-      letter-spacing: 0.14em;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
       cursor: pointer;
-      color: #3a3526;
-      border-bottom: 1.5px solid transparent;
+      color: #bbb;
+      border-bottom: 2px solid transparent;
       margin-bottom: -1px;
       user-select: none;
       white-space: nowrap;
-      font-family: 'Jost', sans-serif;
+      font-family: 'DM Sans', sans-serif;
       transition: color 0.2s;
     }
 
-    .popup-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
-    .popup-tab:hover { color: var(--parchment-mid); }
+    .popup-tab.active { color: var(--black); border-bottom-color: var(--red); }
+    .popup-tab:hover { color: var(--black); }
 
-    .popup-tab-content { display: none; }
+    .popup-tab-content { display: none; background: var(--white); }
 
     .popup-tab-content.active {
       display: flex;
@@ -396,6 +385,7 @@
       display: none;
       flex-direction: column;
       padding: 22px;
+      background: var(--white);
     }
 
     .popup-tab-content.simple-content.active { display: flex; }
@@ -405,59 +395,39 @@
       font-weight: 500;
       letter-spacing: 0.15em;
       text-transform: uppercase;
-      color: var(--gold);
+      color: var(--red);
       margin-bottom: 12px;
-      font-family: 'Jost', sans-serif;
+      font-family: 'DM Sans', sans-serif;
     }
 
     .tab-body {
-      font-family: 'Cormorant Garamond', serif;
+      font-family: 'Playfair Display', serif;
       font-size: 14px;
-      line-height: 1.75;
-      color: #7a6e58;
+      line-height: 1.8;
+      color: #555;
       font-style: italic;
-      font-weight: 300;
+      font-weight: 400;
     }
 
     .popup-card.has-image img {
-      width: 155px;
+      width: 160px;
       object-fit: cover;
       flex-shrink: 0;
       display: block;
     }
 
-    .popup-inner { padding: 22px; flex: 1; min-width: 0; }
-
-    .popup-text h3 {
-      font-family: 'Cormorant Garamond', serif;
-      font-weight: 600;
-      font-size: 21px;
-      color: var(--parchment);
-      margin-bottom: 3px;
-      line-height: 1.1;
-      letter-spacing: 0.01em;
-    }
-
-    .popup-category {
-      font-size: 9px;
-      font-weight: 500;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 14px;
-      font-family: 'Jost', sans-serif;
-    }
+    .popup-inner { padding: 20px; flex: 1; min-width: 0; background: var(--white); }
 
     .popup-text p {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 14px;
+      font-family: 'Playfair Display', serif;
+      font-size: 13.5px;
       line-height: 1.8;
-      color: #7a6e58;
+      color: #555;
       font-style: italic;
-      font-weight: 300;
+      font-weight: 400;
     }
 
-    .popup-no-tabs { padding: 22px; }
+    .popup-no-tabs { padding: 20px; background: var(--white); }
   </style>
 </head>
 <body>
@@ -466,61 +436,56 @@
   <div id="opening">
     <div class="opening-inner">
       <div class="opening-eyebrow">A writer's map of Italy</div>
-      <div class="opening-ornament">
-        <div class="opening-ornament-line"></div>
-        <div class="opening-ornament-dot"></div>
-        <div class="opening-ornament-line right"></div>
-      </div>
       <div class="opening-title">Italy,<br><em>felt slowly</em></div>
+      <div class="opening-rule"></div>
       <div class="opening-subtitle">A map for the kind of traveller who reads a city with their whole body and cannot help but write it down.</div>
-      <button class="opening-btn" onclick="enterMap()"><span>Enter the map</span></button>
+      <button class="opening-btn" onclick="enterMap()">Enter the map</button>
     </div>
   </div>
 
   <!-- SIDEBAR -->
   <div id="sidebar">
     <div class="sidebar-top">
+      <div class="sidebar-eyebrow">A writer's map</div>
       <div class="sidebar-brand">Italy,<br><em>felt slowly</em></div>
-      <div class="sidebar-tagline">A writer's map</div>
+      <div class="sidebar-tagline">Every place chosen because it opens something up.</div>
     </div>
     <div class="sidebar-body">
-      <div class="sidebar-label">Show on map</div>
-      <div class="filter-list">
-        <button class="filter-btn active" onclick="toggleFilter(this,'Bologna Spot')" data-filter="Bologna Spot">
-          <span class="filter-pip" style="background:#c0392b"></span>
-          Bologna spots
-        </button>
-        <button class="filter-btn active" onclick="toggleFilter(this,'Bologna Café')" data-filter="Bologna Café">
-          <span class="filter-pip" style="background:#b8953a"></span>
-          Cafés
-        </button>
-        <button class="filter-btn active" onclick="toggleFilter(this,'Bologna Restaurant')" data-filter="Bologna Restaurant">
-          <span class="filter-pip" style="background:#9b4f2e"></span>
-          Restaurants
-        </button>
-        <button class="filter-btn active" onclick="toggleFilter(this,'City')" data-filter="City">
-          <span class="filter-pip" style="background:#556b3d"></span>
-          Cities
-        </button>
-        <button class="filter-btn active" onclick="toggleFilter(this,'other')" data-filter="other">
-          <span class="filter-pip" style="background:#5a5244"></span>
-          Other spots
-        </button>
+      <div>
+        <div class="sidebar-section-label">Filter by type</div>
+        <div class="filter-list">
+          <button class="filter-btn active" onclick="toggleFilter(this,'Bologna Spot')" data-filter="Bologna Spot">
+            <span class="filter-pip" style="background:#d4321c"></span>
+            Bologna spots
+          </button>
+          <button class="filter-btn active" onclick="toggleFilter(this,'Bologna Café')" data-filter="Bologna Café">
+            <span class="filter-pip" style="background:#c8920a"></span>
+            Cafés
+          </button>
+          <button class="filter-btn active" onclick="toggleFilter(this,'Bologna Restaurant')" data-filter="Bologna Restaurant">
+            <span class="filter-pip" style="background:#9b4f2e"></span>
+            Restaurants
+          </button>
+          <button class="filter-btn active" onclick="toggleFilter(this,'City')" data-filter="City">
+            <span class="filter-pip" style="background:#4a6741"></span>
+            Cities
+          </button>
+          <button class="filter-btn active" onclick="toggleFilter(this,'other')" data-filter="other">
+            <span class="filter-pip" style="background:#888"></span>
+            Other spots
+          </button>
+        </div>
       </div>
-      <div class="sidebar-divider"></div>
-      <div class="sidebar-label">About</div>
-      <div class="tab-body" style="font-size:12px; line-height:1.7;">
-        A curated guide to Italy through the senses. Every place on this map was chosen because it opens something up.
+      <div>
+        <div class="sidebar-section-label">About this map</div>
+        <div class="sidebar-about">A curated guide to Italy through the senses. Every place was chosen because it opens something up.</div>
       </div>
     </div>
     <div class="sidebar-footer">
-      <div class="sidebar-footer-text">
-        For writers, wanderers,<br>and those who stay too long.
-      </div>
+      <div class="sidebar-footer-text">For writers, wanderers,<br>and those who stay too long.</div>
     </div>
   </div>
 
-  <!-- MAP -->
   <div id="map"></div>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -532,40 +497,38 @@
       setTimeout(function() { o.style.display = 'none'; }, 1000);
     }
 
-    var map = L.map('map', { zoomControl: false }).setView([43.5, 12.2], 6);
+    var map = L.map('map', { zoomControl: false }).setView([43.5, 12.5], 6);
     L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-    // Stadia watercolour — warm, painterly, unlike any other map
     L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-  attribution: '&copy; OpenStreetMap &copy; CARTO',
-  maxZoom: 19
-}).addTo(map);
+      attribution: '&copy; OpenStreetMap &copy; CARTO',
+      maxZoom: 19
+    }).addTo(map);
 
     var categoryColors = {
-      'Bologna Spot': '#c0392b',
-      'Bologna Café': '#b8953a',
+      'Bologna Spot': '#d4321c',
+      'Bologna Café': '#c8920a',
       'Bologna Restaurant': '#9b4f2e',
-      'City': '#556b3d',
-      'Writing Spot': '#5a5244',
-      'Story Moment': '#5a5244',
-      'Quiet Place': '#5a5244'
+      'City': '#4a6741',
+      'Writing Spot': '#888',
+      'Story Moment': '#888',
+      'Quiet Place': '#888'
     };
 
     function createPin(category) {
-      var color = categoryColors[category] || '#5a5244';
+      var color = categoryColors[category] || '#888';
       var svg =
-        '<svg width="24" height="36" viewBox="0 0 24 36" xmlns="http://www.w3.org/2000/svg">' +
-          '<path d="M12 0C5.373 0 0 5.373 0 12c0 9 12 24 12 24S24 21 24 12C24 5.373 18.627 0 12 0z" fill="' + color + '" opacity="0.9"/>' +
-          '<path d="M12 2C6.477 2 2 6.477 2 12c0 8 10 21 10 21S22 20 22 12C22 6.477 17.523 2 12 2z" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>' +
-          '<circle cx="12" cy="12" r="4.5" fill="rgba(255,255,255,0.9)"/>' +
-          '<circle cx="12" cy="12" r="2.5" fill="' + color + '"/>' +
+        '<svg width="26" height="38" viewBox="0 0 26 38" xmlns="http://www.w3.org/2000/svg">' +
+          '<path d="M13 0C5.82 0 0 5.82 0 13c0 9.75 13 25 13 25S26 22.75 26 13C26 5.82 20.18 0 13 0z" fill="' + color + '"/>' +
+          '<circle cx="13" cy="13" r="5.5" fill="white" opacity="0.95"/>' +
+          '<circle cx="13" cy="13" r="3" fill="' + color + '"/>' +
         '</svg>';
       return L.divIcon({
         className: '',
         html: svg,
-        iconSize: [24, 36],
-        iconAnchor: [12, 36],
-        popupAnchor: [0, -38]
+        iconSize: [26, 38],
+        iconAnchor: [13, 38],
+        popupAnchor: [0, -40]
       });
     }
 
@@ -573,30 +536,7 @@
     var activeFilters = new Set(['Bologna Spot','Bologna Café','Bologna Restaurant','City','other']);
 
     var places = [
-      {
-        name: "Florence",
-        category: "Writing Spot",
-        description: "You walk at sunrise before the crowds arrive. This is where you'd start your novel.",
-        lat: 43.7696, lng: 11.2558
-      },
-      {
-        name: "Rome",
-        category: "Story Moment",
-        description: "You sit in Trastevere writing between bites. Chaos becomes part of your story.",
-        lat: 41.9028, lng: 12.4964
-      },
-      {
-        name: "Venice",
-        category: "Quiet Place",
-        description: "You get lost on purpose. Everything feels dreamlike.",
-        lat: 45.4408, lng: 12.3155
-      },
-      {
-        name: "Siena",
-        category: "Story Moment",
-        description: "A place where time feels slower and every street invites reflection.",
-        lat: 43.3188, lng: 11.3308
-      },
+      
       {
         name: "Bologna",
         category: "City",
@@ -715,6 +655,12 @@
       var hasHistory = !!place.history;
       var hasExtras = hasChallenge || hasCuriosity || hasHistory;
 
+      var header =
+        '<div class="popup-header">' +
+          '<h3>' + place.name + '</h3>' +
+          '<div class="popup-category">' + place.category + '</div>' +
+        '</div>';
+
       var tabs = '';
       var contents = '';
 
@@ -727,27 +673,22 @@
         tabs += '</div>';
       }
 
-      var inner =
-        '<div class="popup-text">' +
-          '<h3>' + place.name + '</h3>' +
-          '<div class="popup-category">' + place.category + '</div>' +
-          '<p>' + place.description + '</p>' +
-        '</div>';
+      var body = '<p>' + place.description + '</p>';
 
       if (hasImage) {
         contents += '<div id="' + id + '-place" class="popup-tab-content active">' +
           '<img src="' + place.image + '" alt="' + place.name + '">' +
-          '<div class="popup-inner">' + inner + '</div></div>';
+          '<div class="popup-inner">' + body + '</div></div>';
       } else {
         contents += '<div id="' + id + '-place" class="popup-tab-content active">' +
-          '<div class="popup-inner popup-no-tabs">' + inner + '</div></div>';
+          '<div class="popup-inner popup-no-tabs">' + body + '</div></div>';
       }
 
       if (hasChallenge) contents += '<div id="' + id + '-challenge" class="popup-tab-content simple-content"><div class="tab-label">Writing Challenge</div><div class="tab-body">' + place.challenge + '</div></div>';
       if (hasCuriosity) contents += '<div id="' + id + '-curiosity" class="popup-tab-content simple-content"><div class="tab-label">Look Closer</div><div class="tab-body">' + place.curiosity + '</div></div>';
       if (hasHistory) contents += '<div id="' + id + '-history" class="popup-tab-content simple-content"><div class="tab-label">The Lives Before Yours</div><div class="tab-body">' + place.history + '</div></div>';
 
-      return '<div class="popup-card' + (hasImage ? ' has-image' : '') + '" id="' + id + '">' + tabs + contents + '</div>';
+      return '<div class="popup-card' + (hasImage ? ' has-image' : '') + '" id="' + id + '">' + header + tabs + contents + '</div>';
     }
 
     window.switchTab = function(id, tab) {
