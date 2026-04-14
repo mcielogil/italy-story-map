@@ -316,8 +316,14 @@
 
     .popup-header {
       background: var(--black);
-      padding: 16px 20px 14px;
+      padding: 14px 20px 12px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
     }
+
+    .popup-header-text { flex: 1; }
 
     .popup-header h3 {
       font-family: 'Playfair Display', serif;
@@ -336,6 +342,40 @@
       text-transform: uppercase;
       color: var(--red);
       font-family: 'DM Sans', sans-serif;
+    }
+
+    /* AUDIO BUTTON */
+    .audio-btn {
+      background: transparent;
+      border: 1px solid #3a3632;
+      color: #6a6460;
+      cursor: pointer;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+      transition: all 0.2s;
+      padding: 0;
+    }
+
+    .audio-btn:hover {
+      border-color: var(--red);
+      color: var(--red);
+    }
+
+    .audio-btn.playing {
+      border-color: var(--red);
+      color: var(--red);
+      background: rgba(212,50,28,0.08);
+    }
+
+    .audio-btn svg {
+      width: 14px;
+      height: 14px;
     }
 
     .popup-tabs {
@@ -482,6 +522,60 @@
       setTimeout(function() { o.style.display = 'none'; }, 1000);
     }
 
+    // AUDIO — stop any playing speech when a new popup opens
+    var currentBtn = null;
+
+    function stopSpeech() {
+      window.speechSynthesis.cancel();
+      if (currentBtn) {
+        currentBtn.classList.remove('playing');
+        currentBtn.innerHTML = speakerIcon();
+        currentBtn = null;
+      }
+    }
+
+    function speakerIcon() {
+      return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>';
+    }
+
+    function stopIcon() {
+      return '<svg viewBox="0 0 24 24" fill="currentColor" stroke="none"><rect x="6" y="6" width="12" height="12" rx="1"></rect></svg>';
+    }
+
+    function toggleAudio(btn, text) {
+      if (btn.classList.contains('playing')) {
+        stopSpeech();
+        return;
+      }
+      stopSpeech();
+      var utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'en-GB';
+      utterance.rate = 0.88;
+      utterance.pitch = 1;
+
+      // Try to find a good English voice
+      var voices = window.speechSynthesis.getVoices();
+      var preferred = voices.find(function(v) {
+        return v.lang === 'en-GB' && v.name.toLowerCase().includes('female');
+      }) || voices.find(function(v) {
+        return v.lang === 'en-GB';
+      }) || voices.find(function(v) {
+        return v.lang.startsWith('en');
+      });
+      if (preferred) utterance.voice = preferred;
+
+      utterance.onend = function() {
+        btn.classList.remove('playing');
+        btn.innerHTML = speakerIcon();
+        currentBtn = null;
+      };
+
+      btn.classList.add('playing');
+      btn.innerHTML = stopIcon();
+      currentBtn = btn;
+      window.speechSynthesis.speak(utterance);
+    }
+
     var map = L.map('map', { zoomControl: false }).setView([44.4949, 11.3426], 13);
     L.control.zoom({ position: 'bottomright' }).addTo(map);
 
@@ -489,6 +583,9 @@
       attribution: '&copy; OpenStreetMap &copy; CARTO',
       maxZoom: 19
     }).addTo(map);
+
+    // Stop speech when popup closes
+    map.on('popupclose', function() { stopSpeech(); });
 
     var categoryColors = {
       'Bologna Spot': '#d4321c',
@@ -631,10 +728,18 @@
       var hasHistory = !!place.history;
       var hasExtras = hasChallenge || hasCuriosity || hasHistory;
 
+      // Escape description for use in onclick attribute
+      var escapedDesc = place.description.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+
       var header =
         '<div class="popup-header">' +
-          '<h3>' + place.name + '</h3>' +
-          '<div class="popup-category">' + place.category + '</div>' +
+          '<div class="popup-header-text">' +
+            '<h3>' + place.name + '</h3>' +
+            '<div class="popup-category">' + place.category + '</div>' +
+          '</div>' +
+          '<button class="audio-btn" onclick="toggleAudio(this, \'' + escapedDesc + '\')" title="Listen">' +
+            speakerIcon() +
+          '</button>' +
         '</div>';
 
       var tabs = '';
@@ -692,6 +797,11 @@
         if (show && !map.hasLayer(obj.marker)) map.addLayer(obj.marker);
         if (!show && map.hasLayer(obj.marker)) map.removeLayer(obj.marker);
       });
+    };
+
+    // Load voices (some browsers need this trigger)
+    window.speechSynthesis.onvoiceschanged = function() {
+      window.speechSynthesis.getVoices();
     };
 
     places.forEach(function(place) {
