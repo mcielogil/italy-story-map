@@ -5,388 +5,443 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500&display=swap');
-
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    body {
-      font-family: 'Inter', sans-serif;
-      background: #1a1410;
+    :root {
+      --ink: #1c1a14;
+      --ink-soft: #2e2a1e;
+      --parchment: #f2ead8;
+      --parchment-dark: #e0d4b8;
+      --olive: #3d4a2e;
+      --olive-mid: #556b3d;
+      --gold: #b8953a;
+      --gold-light: #d4ae5a;
+      --cream: #f8f3e8;
+      --muted: #8a8270;
+      --terracotta: #9b4f2e;
     }
 
-    #map {
-      height: 100vh;
-      width: 100%;
-      filter: sepia(20%) brightness(0.95);
-    }
+    body { font-family: 'Jost', sans-serif; background: var(--ink); overflow: hidden; }
+
+    #map { height: 100vh; width: 100%; }
+
+    /* warm sepia-toned map */
+    .leaflet-tile-pane { filter: sepia(35%) saturate(0.8) brightness(0.97) hue-rotate(10deg); }
 
     /* OPENING SCREEN */
     #opening {
       position: fixed;
       inset: 0;
       z-index: 9999;
-      background: #1a1410;
+      background: var(--ink);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 32px;
-      transition: opacity 0.8s ease;
+      gap: 0;
+      transition: opacity 1s ease;
     }
 
-    #opening.fade-out {
-      opacity: 0;
-      pointer-events: none;
+    #opening.fade-out { opacity: 0; pointer-events: none; }
+
+    .opening-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      max-width: 640px;
+      padding: 0 32px;
+      animation: fadeUp 1.2s ease forwards;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .opening-rule {
+      width: 1px;
+      height: 48px;
+      background: linear-gradient(to bottom, transparent, var(--gold), transparent);
     }
 
     .opening-eyebrow {
-      font-family: 'Inter', sans-serif;
-      font-size: 11px;
+      font-family: 'Jost', sans-serif;
+      font-size: 10px;
       font-weight: 500;
-      letter-spacing: 0.2em;
+      letter-spacing: 0.25em;
       text-transform: uppercase;
-      color: #c8a96e;
+      color: var(--gold);
     }
 
     .opening-title {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(32px, 6vw, 64px);
-      font-weight: 400;
-      color: #f5efe6;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(42px, 7vw, 80px);
+      font-weight: 300;
+      color: var(--parchment);
       text-align: center;
-      line-height: 1.2;
-      max-width: 600px;
-      padding: 0 24px;
+      line-height: 1.1;
+      letter-spacing: -0.01em;
+    }
+
+    .opening-title em {
+      font-style: italic;
+      color: var(--gold-light);
     }
 
     .opening-subtitle {
-      font-family: 'Playfair Display', serif;
+      font-family: 'Cormorant Garamond', serif;
       font-style: italic;
-      font-size: clamp(14px, 2vw, 18px);
-      color: #8a7660;
+      font-size: clamp(15px, 2vw, 19px);
+      font-weight: 300;
+      color: var(--muted);
       text-align: center;
-      max-width: 400px;
-      padding: 0 24px;
-      line-height: 1.6;
+      line-height: 1.7;
+      max-width: 460px;
     }
 
     .opening-btn {
-      margin-top: 16px;
-      padding: 14px 40px;
+      margin-top: 12px;
+      padding: 13px 44px;
       background: transparent;
-      border: 1px solid #c8a96e;
-      color: #c8a96e;
-      font-family: 'Inter', sans-serif;
-      font-size: 12px;
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      font-family: 'Jost', sans-serif;
+      font-size: 10px;
       font-weight: 500;
-      letter-spacing: 0.15em;
+      letter-spacing: 0.2em;
       text-transform: uppercase;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: all 0.4s ease;
+      position: relative;
+      overflow: hidden;
     }
 
-    .opening-btn:hover {
-      background: #c8a96e;
-      color: #1a1410;
-    }
-
-    .opening-divider {
-      width: 40px;
-      height: 1px;
-      background: #3d3328;
-    }
-
-    /* TITLE BOX */
-    #title-box {
+    .opening-btn::before {
+      content: '';
       position: absolute;
-      top: 24px;
-      left: 24px;
+      inset: 0;
+      background: var(--gold);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.4s ease;
+    }
+
+    .opening-btn:hover::before { transform: scaleX(1); }
+    .opening-btn span { position: relative; z-index: 1; }
+    .opening-btn:hover span { color: var(--ink); }
+
+    /* SIDEBAR */
+    #sidebar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
       z-index: 1000;
-      background: rgba(26, 20, 16, 0.92);
-      padding: 16px 20px;
-      border: 1px solid #3d3328;
-      max-width: 260px;
-      backdrop-filter: blur(8px);
-    }
-
-    .title {
-      font-family: 'Playfair Display', serif;
-      font-size: 18px;
-      font-weight: 400;
-      color: #f5efe6;
-      letter-spacing: 0.02em;
-    }
-
-    .subtitle {
-      font-size: 11px;
-      font-weight: 300;
-      color: #8a7660;
-      margin-top: 4px;
-      font-style: italic;
-      font-family: 'Playfair Display', serif;
-    }
-
-    .divider {
-      height: 1px;
-      background: #3d3328;
-      margin: 12px 0;
-    }
-
-    /* FILTERS */
-    #filters {
+      width: 240px;
+      background: var(--ink);
+      border-right: 1px solid #2e2a1e;
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      padding: 32px 24px;
+      gap: 0;
+    }
+
+    .sidebar-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px;
+      font-weight: 300;
+      color: var(--parchment);
+      line-height: 1.2;
+      letter-spacing: 0.01em;
+      margin-bottom: 4px;
+    }
+
+    .sidebar-logo em {
+      font-style: italic;
+      color: var(--gold-light);
+    }
+
+    .sidebar-tagline {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 12px;
+      font-weight: 300;
+      color: var(--muted);
+      line-height: 1.5;
+      margin-bottom: 28px;
+    }
+
+    .sidebar-rule {
+      height: 1px;
+      background: #2e2a1e;
+      margin-bottom: 24px;
+    }
+
+    .sidebar-section-label {
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 14px;
+    }
+
+    .filter-list {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      flex: 1;
     }
 
     .filter-btn {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       background: transparent;
       border: none;
       cursor: pointer;
-      padding: 4px 0;
-      font-family: 'Inter', sans-serif;
+      padding: 7px 10px;
+      font-family: 'Jost', sans-serif;
       font-size: 11px;
       font-weight: 400;
-      color: #8a7660;
+      color: #5a5244;
       text-align: left;
-      transition: color 0.2s;
+      transition: all 0.2s;
+      border-radius: 2px;
+      letter-spacing: 0.02em;
     }
 
-    .filter-btn.active {
-      color: #f5efe6;
-    }
+    .filter-btn.active { color: var(--parchment); background: #2e2a1e; }
+    .filter-btn:hover { color: var(--gold-light); }
 
-    .filter-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
+    .filter-icon {
+      width: 18px;
+      height: 18px;
       flex-shrink: 0;
-    }
-
-    .filter-btn:hover {
-      color: #c8a96e;
-    }
-
-    /* CUSTOM MARKERS */
-    .custom-marker {
       display: flex;
       align-items: center;
       justify-content: center;
-      border-radius: 50%;
-      border: 2px solid;
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding-top: 24px;
+      border-top: 1px solid #2e2a1e;
       font-size: 10px;
+      color: #3d3828;
+      font-family: 'Jost', sans-serif;
+      letter-spacing: 0.05em;
+      line-height: 1.6;
+    }
+
+    /* MAP OFFSET */
+    #map { margin-left: 240px; width: calc(100vw - 240px); }
+
+    /* CUSTOM MARKERS */
+    .map-pin {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       cursor: pointer;
-      transition: transform 0.2s;
+      transition: transform 0.2s ease;
     }
 
-    .custom-marker:hover {
-      transform: scale(1.2);
+    .map-pin:hover { transform: translateY(-3px); }
+
+    .pin-head {
+      width: 22px;
+      height: 22px;
+      border-radius: 50% 50% 50% 0;
+      transform: rotate(-45deg);
+      border: 2px solid rgba(255,255,255,0.3);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.4);
     }
 
-    /* POPUP CARDS */
+    .pin-stem {
+      width: 2px;
+      height: 8px;
+      margin-top: -1px;
+    }
+
+    /* LEAFLET OVERRIDES */
     .leaflet-popup-content-wrapper {
-      background: #1e1810;
-      border: 1px solid #3d3328;
+      background: var(--ink);
+      border: 1px solid #2e2a1e;
       border-radius: 0;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+      box-shadow: 0 16px 48px rgba(0,0,0,0.6);
       padding: 0;
     }
 
-    .leaflet-popup-content {
-      margin: 0;
-      padding: 0;
-    }
+    .leaflet-popup-content { margin: 0; padding: 0; }
+    .leaflet-popup-tip { background: var(--ink); }
+    .leaflet-popup-close-button { color: var(--muted) !important; font-size: 16px !important; top: 8px !important; right: 10px !important; }
+    .leaflet-popup-close-button:hover { color: var(--parchment) !important; }
+    .leaflet-control-zoom { border: 1px solid #2e2a1e !important; border-radius: 0 !important; }
+    .leaflet-control-zoom a { background: var(--ink) !important; color: var(--muted) !important; border-bottom: 1px solid #2e2a1e !important; }
+    .leaflet-control-zoom a:hover { background: #2e2a1e !important; color: var(--parchment) !important; }
 
-    .leaflet-popup-tip {
-      background: #1e1810;
-    }
+    /* POPUP */
+    .popup-card { max-width: 280px; min-width: 220px; }
+    .popup-card.has-image { max-width: 500px; min-width: 420px; }
 
-    .leaflet-popup-close-button {
-      color: #8a7660 !important;
-      font-size: 18px !important;
-      padding: 8px 10px !important;
-    }
-
-    .leaflet-popup-close-button:hover {
-      color: #f5efe6 !important;
-    }
-
-    .popup-card {
-      max-width: 280px;
-      min-width: 220px;
-      padding: 20px;
-    }
-
-    .popup-card.has-image {
-      max-width: 480px;
-      min-width: 400px;
-      padding: 0;
-    }
-
-    /* TABS */
     .popup-tabs {
       display: flex;
-      border-bottom: 1px solid #3d3328;
+      border-bottom: 1px solid #2e2a1e;
       padding: 0 20px;
-      gap: 0;
+      overflow-x: auto;
     }
 
+    .popup-tabs::-webkit-scrollbar { display: none; }
+
     .popup-tab {
-      padding: 10px 12px;
-      font-size: 10px;
+      padding: 11px 10px;
+      font-size: 9px;
       font-weight: 500;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
       cursor: pointer;
-      color: #5a4d3e;
-      border-bottom: 2px solid transparent;
+      color: #3d3828;
+      border-bottom: 1.5px solid transparent;
       margin-bottom: -1px;
       user-select: none;
       white-space: nowrap;
-      font-family: 'Inter', sans-serif;
+      font-family: 'Jost', sans-serif;
       transition: color 0.2s;
     }
 
-    .popup-tab.active {
-      color: #c8a96e;
-      border-bottom-color: #c8a96e;
-    }
+    .popup-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+    .popup-tab:hover { color: var(--parchment); }
 
-    .popup-tab:hover {
-      color: #f5efe6;
-    }
-
-    .popup-tab-content {
-      display: none;
-    }
+    .popup-tab-content { display: none; }
 
     .popup-tab-content.active {
       display: flex;
-      gap: 0;
       align-items: stretch;
     }
 
     .popup-tab-content.simple-content {
       display: none;
       flex-direction: column;
-      padding: 20px;
+      padding: 22px 22px;
     }
 
-    .popup-tab-content.simple-content.active {
-      display: flex;
-    }
+    .popup-tab-content.simple-content.active { display: flex; }
 
     .tab-label {
-      font-size: 10px;
+      font-size: 9px;
       font-weight: 500;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.15em;
       text-transform: uppercase;
-      color: #c8a96e;
-      margin-bottom: 10px;
-      font-family: 'Inter', sans-serif;
+      color: var(--gold);
+      margin-bottom: 12px;
+      font-family: 'Jost', sans-serif;
     }
 
     .tab-body {
-      font-size: 13px;
-      line-height: 1.65;
-      color: #b8a898;
-      font-family: 'Playfair Display', serif;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      line-height: 1.7;
+      color: #a09070;
       font-style: italic;
+      font-weight: 300;
     }
 
     .popup-card.has-image img {
-      width: 160px;
-      min-height: 100%;
+      width: 150px;
       object-fit: cover;
       flex-shrink: 0;
       display: block;
     }
 
-    .popup-inner {
-      padding: 20px;
-      flex: 1;
-    }
-
-    .popup-card:not(.has-image) .popup-inner {
-      padding: 0;
-    }
+    .popup-inner { padding: 22px; flex: 1; }
 
     .popup-text h3 {
-      font-family: 'Playfair Display', serif;
+      font-family: 'Cormorant Garamond', serif;
       font-weight: 600;
-      font-size: 17px;
-      color: #f5efe6;
-      margin-bottom: 4px;
-      line-height: 1.2;
+      font-size: 20px;
+      color: var(--parchment);
+      margin-bottom: 3px;
+      line-height: 1.15;
+      letter-spacing: 0.01em;
     }
 
     .popup-category {
-      font-size: 10px;
+      font-size: 9px;
       font-weight: 500;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.18em;
       text-transform: uppercase;
-      color: #c8a96e;
-      margin-bottom: 12px;
-      font-family: 'Inter', sans-serif;
+      color: var(--gold);
+      margin-bottom: 14px;
+      font-family: 'Jost', sans-serif;
     }
 
     .popup-text p {
-      font-family: 'Playfair Display', serif;
-      font-size: 13px;
-      line-height: 1.65;
-      color: #b8a898;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      line-height: 1.75;
+      color: #9a8e7a;
       font-style: italic;
+      font-weight: 300;
     }
 
-    .no-tabs-padding {
-      padding: 20px;
-    }
+    .popup-no-tabs { padding: 22px; }
   </style>
 </head>
 <body>
 
-  <!-- OPENING SCREEN -->
   <div id="opening">
-    <div class="opening-eyebrow">A writer's guide to Italy</div>
-    <div class="opening-divider"></div>
-    <div class="opening-title">Some places ask to be written about</div>
-    <div class="opening-subtitle">A curated map of streets, squares, and corners that open something up.</div>
-    <button class="opening-btn" onclick="enterMap()">Enter the map</button>
+    <div class="opening-inner">
+      <div class="opening-eyebrow">A writer's map of Italy</div>
+      <div class="opening-rule"></div>
+      <div class="opening-title">Italy, <em>felt slowly</em></div>
+      <div class="opening-subtitle">A map for the kind of traveller who reads a city with their whole body and cannot help but write it down.</div>
+      <button class="opening-btn" onclick="enterMap()"><span>Enter the map</span></button>
+    </div>
   </div>
 
-  <div id="title-box">
-    <div class="title">Italy Story Map</div>
-    <div class="subtitle">Some places ask to be written about</div>
-    <div class="divider"></div>
-    <div id="filters">
-      <button class="filter-btn active" onclick="toggleFilter(this, 'all')" data-filter="all">
-        <span class="filter-dot" style="background:#c8a96e"></span>
-        All places
-      </button>
-      <button class="filter-btn active" onclick="toggleFilter(this, 'Bologna Spot')" data-filter="Bologna Spot">
-        <span class="filter-dot" style="background:#c0392b"></span>
+  <div id="sidebar">
+    <div class="sidebar-logo">Italy,<br><em>felt slowly</em></div>
+    <div class="sidebar-tagline">A writer's map</div>
+    <div class="sidebar-rule"></div>
+    <div class="sidebar-section-label">Show on map</div>
+    <div class="filter-list">
+      <button class="filter-btn active" onclick="toggleFilter(this,'Bologna Spot')" data-filter="Bologna Spot">
+        <span class="filter-icon">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5" stroke="#c0392b" stroke-width="1.5"/><circle cx="7" cy="7" r="2" fill="#c0392b"/></svg>
+        </span>
         Bologna spots
       </button>
-      <button class="filter-btn active" onclick="toggleFilter(this, 'Bologna Café')" data-filter="Bologna Café">
-        <span class="filter-dot" style="background:#8b6914"></span>
+      <button class="filter-btn active" onclick="toggleFilter(this,'Bologna Café')" data-filter="Bologna Café">
+        <span class="filter-icon">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5" stroke="#b8953a" stroke-width="1.5"/><circle cx="7" cy="7" r="2" fill="#b8953a"/></svg>
+        </span>
         Cafés
       </button>
-      <button class="filter-btn active" onclick="toggleFilter(this, 'Bologna Restaurant')" data-filter="Bologna Restaurant">
-        <span class="filter-dot" style="background:#6b4226"></span>
+      <button class="filter-btn active" onclick="toggleFilter(this,'Bologna Restaurant')" data-filter="Bologna Restaurant">
+        <span class="filter-icon">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5" stroke="#9b4f2e" stroke-width="1.5"/><circle cx="7" cy="7" r="2" fill="#9b4f2e"/></svg>
+        </span>
         Restaurants
       </button>
-      <button class="filter-btn active" onclick="toggleFilter(this, 'City')" data-filter="City">
-        <span class="filter-dot" style="background:#4a6741"></span>
+      <button class="filter-btn active" onclick="toggleFilter(this,'City')" data-filter="City">
+        <span class="filter-icon">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5" stroke="#3d4a2e" stroke-width="1.5"/><circle cx="7" cy="7" r="2" fill="#3d4a2e"/></svg>
+        </span>
         Cities
       </button>
-      <button class="filter-btn active" onclick="toggleFilter(this, 'other')" data-filter="other">
-        <span class="filter-dot" style="background:#4a5568"></span>
+      <button class="filter-btn active" onclick="toggleFilter(this,'other')" data-filter="other">
+        <span class="filter-icon">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5" stroke="#5a5244" stroke-width="1.5"/><circle cx="7" cy="7" r="2" fill="#5a5244"/></svg>
+        </span>
         Other spots
       </button>
+    </div>
+    <div class="sidebar-footer">
+      A curated guide for writers<br>and those who travel slowly.
     </div>
   </div>
 
@@ -396,15 +451,12 @@
   <script>
 
     function enterMap() {
-      var opening = document.getElementById('opening');
-      opening.classList.add('fade-out');
-      setTimeout(function() {
-        opening.style.display = 'none';
-      }, 800);
+      var o = document.getElementById('opening');
+      o.classList.add('fade-out');
+      setTimeout(function() { o.style.display = 'none'; }, 1000);
     }
 
-    var map = L.map('map', { zoomControl: false }).setView([43.8, 11.8], 6);
-
+    var map = L.map('map', { zoomControl: false }).setView([43.8, 12.2], 6);
     L.control.zoom({ position: 'bottomright' }).addTo(map);
 
     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
@@ -413,67 +465,62 @@
 
     var categoryColors = {
       'Bologna Spot': '#c0392b',
-      'Bologna Café': '#8b6914',
-      'Bologna Restaurant': '#6b4226',
-      'City': '#4a6741',
-      'Writing Spot': '#4a5568',
-      'Story Moment': '#4a5568',
-      'Quiet Place': '#4a5568'
+      'Bologna Café': '#b8953a',
+      'Bologna Restaurant': '#9b4f2e',
+      'City': '#556b3d',
+      'Writing Spot': '#5a5244',
+      'Story Moment': '#5a5244',
+      'Quiet Place': '#5a5244'
     };
 
-    function getCategoryColor(category) {
-      return categoryColors[category] || '#4a5568';
-    }
-
-    function createMarkerIcon(category) {
-      var color = getCategoryColor(category);
+    function createPin(category) {
+      var color = categoryColors[category] || '#5a5244';
+      var svg = '<svg width="20" height="30" viewBox="0 0 20 30" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+        '<path d="M10 0C4.477 0 0 4.477 0 10c0 7.5 10 20 10 20S20 17.5 20 10C20 4.477 15.523 0 10 0z" fill="' + color + '" opacity="0.92"/>' +
+        '<circle cx="10" cy="10" r="4" fill="rgba(255,255,255,0.5)"/>' +
+        '</svg>';
       return L.divIcon({
         className: '',
-        html: '<div style="width:14px;height:14px;border-radius:50%;background:' + color + ';border:2px solid rgba(255,255,255,0.6);box-shadow:0 2px 6px rgba(0,0,0,0.4);"></div>',
-        iconSize: [14, 14],
-        iconAnchor: [7, 7],
-        popupAnchor: [0, -10]
+        html: svg,
+        iconSize: [20, 30],
+        iconAnchor: [10, 30],
+        popupAnchor: [0, -32]
       });
     }
 
     var allMarkers = [];
-    var activeFilters = new Set(['all', 'Bologna Spot', 'Bologna Café', 'Bologna Restaurant', 'City', 'other']);
+    var activeFilters = new Set(['Bologna Spot','Bologna Café','Bologna Restaurant','City','other']);
 
     var places = [
       {
         name: "Florence",
         category: "Writing Spot",
         description: "You walk at sunrise before the crowds arrive. This is where you'd start your novel.",
-        lat: 43.7696,
-        lng: 11.2558
+        lat: 43.7696, lng: 11.2558
       },
       {
         name: "Rome",
         category: "Story Moment",
         description: "You sit in Trastevere writing between bites. Chaos becomes part of your story.",
-        lat: 41.9028,
-        lng: 12.4964
+        lat: 41.9028, lng: 12.4964
       },
       {
         name: "Venice",
         category: "Quiet Place",
         description: "You get lost on purpose. Everything feels dreamlike.",
-        lat: 45.4408,
-        lng: 12.3155
+        lat: 45.4408, lng: 12.3155
       },
       {
         name: "Siena",
         category: "Story Moment",
         description: "A place where time feels slower and every street invites reflection.",
-        lat: 43.3188,
-        lng: 11.3308
+        lat: 43.3188, lng: 11.3308
       },
       {
         name: "Bologna",
         category: "City",
         description: "A city of porticoes, students, political undercurrents, and beautiful restraint. The kind of place that feels lived in rather than staged.",
-        lat: 44.5058,
-        lng: 11.3429
+        lat: 44.5058, lng: 11.3429
       },
       {
         name: "Piazza Maggiore",
@@ -483,8 +530,7 @@
         curiosity: "This is dummy curiosity text for Piazza Maggiore. Something unexpected, something you would never find in a guidebook.",
         history: "This is dummy history text for Piazza Maggiore. The lives that passed through this square before yours arrived.",
         description: "The stone is cold under your hands. The square is wide and unhurried and full of light that seems to come from everywhere at once. A bicycle passes close. Voices drift without landing. Someone laughs — you don't see who. You came here to write but you don't write yet. You just sit. And something, quietly, begins to loosen. The kind of loosening you didn't know you needed until it happens. Stay. Order a coffee you don't drink. Watch a stranger read. This is where the good ideas come from — not from trying, but from this. From sitting in a square that has been holding people together for five hundred years and finally letting it hold you too.",
-        lat: 44.4937,
-        lng: 11.3431
+        lat: 44.4937, lng: 11.3431
       },
       {
         name: "I 300 Scalini (300 Steps)",
@@ -494,19 +540,17 @@
         curiosity: "This is dummy curiosity text for I 300 Scalini. Something unexpected about this hill that most people never know.",
         history: "This is dummy history text for I 300 Scalini. The lives before yours on this hill.",
         description: "Three hundred steps. Your legs will remind you of every single one. But the hill is green and alive around you, the city noise dropping away with each flight, and by the time you reach the top something has already shifted. The view opens without warning — Bologna below, soft and unhurried, San Luca sitting quietly on the opposite hill like it has always been waiting for you. Sit on the grass. Pour the wine. Tear the bread. Open the notebook. Up here, with the city small beneath you and the hills rolling on forever, the words come easier than they have in months. This is not a tourist spot. This is where Bolognesi come when they need to remember why they live here. Don't tell everyone.",
-        lat: 44.4827,
-        lng: 11.3150
+        lat: 44.4827, lng: 11.3150
       },
       {
         name: "Via Pescherie Vecchie",
         category: "Bologna Spot",
         image: "via-pescherie-vecchie.jpg",
-        challenge: "Pick one smell, one colour, one sound from this street. Write a scene — any scene, any character — where all three appear without being described directly.",
-        curiosity: "This is dummy curiosity text for Via Pescherie Vecchie. Something about this street that most people walk past without noticing.",
+        challenge: "Pick one smell, one colour, one sound from this street. Write a scene where all three appear without being described directly.",
+        curiosity: "This is dummy curiosity text for Via Pescherie Vecchie. Something about this street most people walk past without noticing.",
         history: "This is dummy history text for Via Pescherie Vecchie. The lives before yours on this ancient street.",
         description: "The light is changing. Leave Piazza Maggiore behind and walk east, into the narrow lanes of the Quadrilatero. You'll feel the shift immediately — the streets tighten, the air cools, the noise becomes something closer and more human. Enter through Via Pescherie Vecchie. The smell hits you first — fish, salt, something sweet from a stall around the corner. The vendors are winding down for the evening, stacking crates, calling to each other across the lane. Slow down. Look at the colours — the deep red of the mortadella, the pale yellow of fresh pasta draped over wooden rods, the waxy glow of aged Parmigiano under dim light. Let yourself get a little lost. Turn into Via Drapperie, then double back. Buy something — a small piece of cheese, a paper cone of olives, a glass of Pignoletto from a wine merchant who pours without asking. Find a doorstep or a low ledge and sit. The last of the sun is catching the rooftops. The street is thinning out, the noise softening. This is the hour when Bologna stops performing and just breathes. Open your notebook here. Not to plan, not to organise — just to catch what's dissolving. The light, the smell, the sound of a crate being dragged across stone. You don't need to make it into anything yet. Just write it down before it disappears.",
-        lat: 44.4938,
-        lng: 11.3447
+        lat: 44.4938, lng: 11.3447
       },
       {
         name: "Piazza Minghetti",
@@ -516,8 +560,7 @@
         curiosity: "This is dummy curiosity text for Piazza Minghetti. Something quietly surprising about this square.",
         history: "This is dummy history text for Piazza Minghetti. The lives before yours in this unassuming square.",
         description: "You weren't looking for it. You were walking under the porticos of Via Farini — some of the most beautiful in Bologna, all arches and warm stone and the particular light that bounces between column and pavement — and you just kept going, because you couldn't stop. And then the street opens, quietly, into Piazza Minghetti. No landmark. No crowd. Just a small, elegant square that seems to have nothing to declare. Sit down anyway. Order something. Watch the Bolognesi pass without hurry. This is not a place that performs. It simply exists, with the confidence of somewhere that has never needed to impress anyone. Write here. Nobody will bother you.",
-        lat: 44.4931,
-        lng: 11.3408
+        lat: 44.4931, lng: 11.3408
       },
       {
         name: "Piazza Santo Stefano",
@@ -527,8 +570,7 @@
         curiosity: "This is dummy curiosity text for Piazza Santo Stefano. Something most people never notice about this ancient square.",
         history: "This is dummy history text for Piazza Santo Stefano. The lives before yours on these river pebbles.",
         description: "The square is triangular, paved with river pebbles, and feels like it was left over from another century — which in a way it was. The complex of seven churches at the far end has been here since the 5th century, each door opening into a different age. You don't need to go inside. Just stand in the square as the evening settles, when the bars open and the locals come out and the stone turns gold in the last light. Something about this place makes conversation feel more honest and silence feel less lonely. It is one of those rare spots where the past doesn't feel heavy — it just sits beside you, quietly, like an old friend.",
-        lat: 44.4927,
-        lng: 11.3488
+        lat: 44.4927, lng: 11.3488
       },
       {
         name: "Conservatorio G.B. Martini",
@@ -538,8 +580,7 @@
         curiosity: "This is dummy curiosity text for the Conservatorio. Something unexpected about this courtyard and the music that lives inside it.",
         history: "This is dummy history text for the Conservatorio. The lives before yours inside these walls.",
         description: "Step through the gate and the city disappears. The courtyard of the Conservatorio Martini is all arches and old stone, a former convent where students have been practicing since 1804 — where Rossini himself once walked. Stand still for a moment and listen. Somewhere above you a violin is searching for something. A piano starts, stops, starts again. The sound floats down into the courtyard and dissolves before it reaches you. This is what it feels like to be inside someone else's devotion — that particular quality of effort that hasn't become performance yet. Bring your notebook. Whatever you write here will have music in it whether you intend it or not.",
-        lat: 44.4966,
-        lng: 11.3522
+        lat: 44.4966, lng: 11.3522
       },
       {
         name: "Caffè Zanarini",
@@ -549,8 +590,7 @@
         curiosity: "The founder Enrico Zanarini was a baker's apprentice who built an empire. He started with a single borrowed space in 1930 and eventually ran a chain of bars across Bologna and the Romagna coast. He died in 1948. His son Giorgio turned the Piazza Galvani location into the most fashionable bar in the city — and then moved to Sydney, leaving it all behind.",
         history: "After the war, Zanarini became a quiet gathering place for Bologna's left-wing intellectuals and artists. The painter Giorgio Morandi drank his coffee here. The communist leader Palmiro Togliatti gave speeches from nearby. Actors, writers and directors passed through, stood at this same bar, looked out at the same square. The city was rebuilding itself and this was one of the places it did it.",
         description: "Order an espresso. Pay first, the way Italians do. Then take your place at the bar — standing, always standing — and say buongiorno to whoever is behind the counter. They won't stop moving. That's fine. Under the frescoed ceilings of Zanarini, open since 1930, the city has always conducted itself this way — quickly, elegantly, without fuss. Watch the Bolognesi arrive and leave. The professor with his briefcase. The woman who knows exactly what she wants before she reaches the counter. The student who hesitates. Two minutes and they're gone, back into the porticos of Pavaglione, back into the morning. This is not a place to linger. It is a place to absorb. Stand here long enough and you won't need to invent characters — they will pass right through you.",
-        lat: 44.4933,
-        lng: 11.3412
+        lat: 44.4933, lng: 11.3412
       },
       {
         name: "Trattoria da Vito",
@@ -560,39 +600,35 @@
         curiosity: "Guccini lived around the corner on Via Paolo Fabbri 43 — literally the title of one of his most celebrated albums. He came here almost every night for years. After midnight, when the other customers had gone, the tablecloths would come off and the bare plywood underneath became a surface for card games, sketches, notes, half-written song lyrics. The table was the first draft.",
         history: "Vito Pagani opened this place in 1949 in a neighbourhood built for factory workers. His son Paolo inherited it and inherited the regulars — Guccini, Dalla, Vecchioni, De André, Benigni, Dario Fo. One night Fabrizio De André left drunk, drove his Citroën DS into something a kilometre down the road, and couldn't remember his own name. The police found the trattoria's name on his chicken wrapper and called Paolo to come and get him. That is the kind of place this is — the kind where you are known, where someone will come and find you, where the night has no fixed ending.",
         description: "It's not in the centre. That's the point. Take the twenty minute walk to Cirenaica, the old working class neighbourhood just outside the walls, and find Via Musolesi. Red and white checked tablecloths. Green curtains. Neon light. The lasagne arrives without ceremony and it is perfect. This is where Guccini, Dalla, De André, Gaber and Fo used to eat, drink, argue about politics and play cards until the early hours. The walls still have their photographs. The chairs haven't changed. Run now by Vito's granddaughter, the place has no interest in becoming anything other than what it always was. Order the tagliatelle. Order the wine. Stay late.",
-        lat: 44.4902,
-        lng: 11.3598
+        lat: 44.4902, lng: 11.3598
       },
       {
         name: "Bari",
         category: "Story Moment",
         description: "Old women making pasta in the street, voices echoing through narrow alleys.",
-        lat: 41.1171,
-        lng: 16.8719
+        lat: 41.1171, lng: 16.8719
       },
       {
         name: "Torno",
         category: "Quiet Place",
         description: "A small village on Lake Como where time feels suspended. Stone houses, narrow paths, and stillness that pulls you inward.",
-        lat: 45.8619,
-        lng: 9.1168
+        lat: 45.8619, lng: 9.1168
       },
       {
         name: "Spello",
         category: "Writing Spot",
         description: "A quiet hill town where every street feels intentional. Flowers, silence, and the kind of beauty that slows your thoughts.",
-        lat: 42.9925,
-        lng: 12.6712
+        lat: 42.9925, lng: 12.6712
       }
     ];
 
     function getFilterGroup(category) {
-      if (['Writing Spot', 'Story Moment', 'Quiet Place'].includes(category)) return 'other';
+      if (['Writing Spot','Story Moment','Quiet Place'].includes(category)) return 'other';
       return category;
     }
 
     function buildPopup(place) {
-      var id = 'popup-' + Math.random().toString(36).substr(2, 9);
+      var id = 'popup-' + Math.random().toString(36).substr(2,9);
       var hasImage = !!place.image;
       var hasChallenge = !!place.challenge;
       var hasCuriosity = !!place.curiosity;
@@ -603,49 +639,32 @@
       var contents = '';
 
       if (hasExtras) {
-        tabs = '<div class="popup-tabs"><div class="popup-tab active" onclick="switchTab(\'' + id + '\', \'place\')">Place</div>';
-        if (hasChallenge) tabs += '<div class="popup-tab" onclick="switchTab(\'' + id + '\', \'challenge\')">Challenge</div>';
-        if (hasCuriosity) tabs += '<div class="popup-tab" onclick="switchTab(\'' + id + '\', \'curiosity\')">Look Closer</div>';
-        if (hasHistory) tabs += '<div class="popup-tab" onclick="switchTab(\'' + id + '\', \'history\')">The Lives Before Yours</div>';
+        tabs = '<div class="popup-tabs">' +
+          '<div class="popup-tab active" onclick="switchTab(\'' + id + '\',\'place\')">Place</div>';
+        if (hasChallenge) tabs += '<div class="popup-tab" onclick="switchTab(\'' + id + '\',\'challenge\')">Challenge</div>';
+        if (hasCuriosity) tabs += '<div class="popup-tab" onclick="switchTab(\'' + id + '\',\'curiosity\')">Look Closer</div>';
+        if (hasHistory) tabs += '<div class="popup-tab" onclick="switchTab(\'' + id + '\',\'history\')">The Lives Before Yours</div>';
         tabs += '</div>';
       }
 
-      var innerContent =
-        '<div class="popup-text">' +
-          '<h3>' + place.name + '</h3>' +
-          '<div class="popup-category">' + place.category + '</div>' +
-          '<p>' + place.description + '</p>' +
-        '</div>';
+      var inner = '<div class="popup-text"><h3>' + place.name + '</h3>' +
+        '<div class="popup-category">' + place.category + '</div>' +
+        '<p>' + place.description + '</p></div>';
 
       if (hasImage) {
-        contents +=
-          '<div id="' + id + '-place" class="popup-tab-content active">' +
-            '<img src="' + place.image + '" alt="' + place.name + '">' +
-            '<div class="popup-inner">' + innerContent + '</div>' +
-          '</div>';
+        contents += '<div id="' + id + '-place" class="popup-tab-content active">' +
+          '<img src="' + place.image + '" alt="' + place.name + '">' +
+          '<div class="popup-inner">' + inner + '</div></div>';
       } else {
-        contents +=
-          '<div id="' + id + '-place" class="popup-tab-content active">' +
-            '<div class="popup-inner no-tabs-padding">' + innerContent + '</div>' +
-          '</div>';
+        contents += '<div id="' + id + '-place" class="popup-tab-content active">' +
+          '<div class="popup-inner popup-no-tabs">' + inner + '</div></div>';
       }
 
-      if (hasChallenge) {
-        contents += '<div id="' + id + '-challenge" class="popup-tab-content simple-content"><div class="tab-label">Writing Challenge</div><div class="tab-body">' + place.challenge + '</div></div>';
-      }
-      if (hasCuriosity) {
-        contents += '<div id="' + id + '-curiosity" class="popup-tab-content simple-content"><div class="tab-label">Look Closer</div><div class="tab-body">' + place.curiosity + '</div></div>';
-      }
-      if (hasHistory) {
-        contents += '<div id="' + id + '-history" class="popup-tab-content simple-content"><div class="tab-label">The Lives Before Yours</div><div class="tab-body">' + place.history + '</div></div>';
-      }
+      if (hasChallenge) contents += '<div id="' + id + '-challenge" class="popup-tab-content simple-content"><div class="tab-label">Writing Challenge</div><div class="tab-body">' + place.challenge + '</div></div>';
+      if (hasCuriosity) contents += '<div id="' + id + '-curiosity" class="popup-tab-content simple-content"><div class="tab-label">Look Closer</div><div class="tab-body">' + place.curiosity + '</div></div>';
+      if (hasHistory) contents += '<div id="' + id + '-history" class="popup-tab-content simple-content"><div class="tab-label">The Lives Before Yours</div><div class="tab-body">' + place.history + '</div></div>';
 
-      var wrapClass = 'popup-card' + (hasImage ? ' has-image' : '');
-      var wrap = hasExtras
-        ? '<div class="' + wrapClass + '" id="' + id + '">' + tabs + contents + '</div>'
-        : '<div class="' + wrapClass + '" id="' + id + '"><div class="' + (hasImage ? '' : 'no-tabs-padding') + '">' + contents + '</div></div>';
-
-      return wrap;
+      return '<div class="popup-card' + (hasImage ? ' has-image' : '') + '" id="' + id + '">' + tabs + contents + '</div>';
     }
 
     window.switchTab = function(id, tab) {
@@ -653,60 +672,32 @@
       if (!card) return;
       card.querySelectorAll('.popup-tab').forEach(function(t) { t.classList.remove('active'); });
       card.querySelectorAll('.popup-tab-content').forEach(function(c) { c.classList.remove('active'); });
-      var activeTab = card.querySelector('[onclick*="\'' + tab + '\'"]');
-      var activeContent = document.getElementById(id + '-' + tab);
-      if (activeTab) activeTab.classList.add('active');
-      if (activeContent) activeContent.classList.add('active');
+      var at = card.querySelector('[onclick*="\'' + tab + '\'"]');
+      var ac = document.getElementById(id + '-' + tab);
+      if (at) at.classList.add('active');
+      if (ac) ac.classList.add('active');
     };
 
     window.toggleFilter = function(btn, filter) {
-      if (filter === 'all') {
-        var allActive = activeFilters.has('Bologna Spot') && activeFilters.has('Bologna Café') &&
-          activeFilters.has('Bologna Restaurant') && activeFilters.has('City') && activeFilters.has('other');
-        var filters = ['Bologna Spot', 'Bologna Café', 'Bologna Restaurant', 'City', 'other'];
-        document.querySelectorAll('.filter-btn').forEach(function(b) {
-          if (allActive) {
-            b.classList.remove('active');
-            activeFilters.clear();
-          } else {
-            b.classList.add('active');
-            filters.forEach(function(f) { activeFilters.add(f); });
-            activeFilters.add('all');
-          }
-        });
+      if (activeFilters.has(filter)) {
+        activeFilters.delete(filter);
+        btn.classList.remove('active');
       } else {
-        if (activeFilters.has(filter)) {
-          activeFilters.delete(filter);
-          btn.classList.remove('active');
-        } else {
-          activeFilters.add(filter);
-          btn.classList.add('active');
-        }
+        activeFilters.add(filter);
+        btn.classList.add('active');
       }
-      updateMarkers();
-    };
-
-    function updateMarkers() {
       allMarkers.forEach(function(obj) {
         var group = getFilterGroup(obj.place.category);
-        if (activeFilters.has(group) || activeFilters.has(obj.place.category)) {
-          if (!map.hasLayer(obj.marker)) map.addLayer(obj.marker);
-        } else {
-          if (map.hasLayer(obj.marker)) map.removeLayer(obj.marker);
-        }
+        var show = activeFilters.has(group) || activeFilters.has(obj.place.category);
+        if (show && !map.hasLayer(obj.marker)) map.addLayer(obj.marker);
+        if (!show && map.hasLayer(obj.marker)) map.removeLayer(obj.marker);
       });
-    }
+    };
 
     places.forEach(function(place) {
-      var marker = L.marker([place.lat, place.lng], {
-        icon: createMarkerIcon(place.category)
-      }).addTo(map);
-
-      var popupOptions = place.image
-        ? { maxWidth: 520, minWidth: 420 }
-        : { maxWidth: 300 };
-
-      marker.bindPopup(buildPopup(place), popupOptions);
+      var marker = L.marker([place.lat, place.lng], { icon: createPin(place.category) }).addTo(map);
+      var opts = place.image ? { maxWidth: 540, minWidth: 440 } : { maxWidth: 300 };
+      marker.bindPopup(buildPopup(place), opts);
       allMarkers.push({ marker: marker, place: place });
     });
 
