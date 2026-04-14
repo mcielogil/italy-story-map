@@ -42,12 +42,60 @@
 
     /* Card with image — horizontal layout */
     .popup-card.has-image {
-      display: flex;
-      flex-direction: row;
-      gap: 12px;
-      align-items: flex-start;
       max-width: 480px;
       min-width: 400px;
+    }
+
+    /* Tabs */
+    .popup-tabs {
+      display: flex;
+      border-bottom: 2px solid #eee;
+      margin-bottom: 10px;
+    }
+    .popup-tab {
+      padding: 5px 14px;
+      font-size: 12px;
+      cursor: pointer;
+      color: #888;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      user-select: none;
+    }
+    .popup-tab.active {
+      color: #333;
+      font-weight: bold;
+      border-bottom: 2px solid #c0392b;
+    }
+    .popup-tab-content {
+      display: none;
+    }
+    .popup-tab-content.active {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    /* Challenge tab */
+    .popup-tab-content.challenge-content {
+      display: none;
+      flex-direction: column;
+    }
+    .popup-tab-content.challenge-content.active {
+      display: flex;
+    }
+    .challenge-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #c0392b;
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+    .challenge-text {
+      font-size: 13px;
+      line-height: 1.5;
+      color: #333;
+      font-style: italic;
     }
 
     .popup-card.has-image img {
@@ -58,7 +106,6 @@
       flex-shrink: 0;
       display: block;
     }
-
     .popup-text {
       flex: 1;
     }
@@ -137,6 +184,7 @@
         name: "Piazza Maggiore",
         category: "Bologna Spot",
         image: "piazza-maggiore.jpg",
+        challenge: "Sit on the steps and pick one stranger. Watch them for five minutes without writing anything. Then write one paragraph — not about what they did, but about what you think they are carrying.",
         description: "The stone is cold under your hands. The square is wide and unhurried and full of light that seems to come from everywhere at once. A bicycle passes close. Voices drift without landing. Someone laughs — you don't see who. You came here to write but you don't write yet. You just sit. And something, quietly, begins to loosen. The kind of loosening you didn't know you needed until it happens. Stay. Order a coffee you don't drink. Watch a stranger read. This is where the good ideas come from — not from trying, but from this. From sitting in a square that has been holding people together for five hundred years and finally letting it hold you too.",
         lat: 44.4937,
         lng: 11.3431
@@ -145,6 +193,7 @@
         name: "I 300 Scalini (300 Steps)",
         category: "Bologna Spot",
         image: "trecento-scalini.jpg",
+        challenge: "This is a dummy writing challenge. Write something here about climbing, effort, and what you find when you arrive somewhere that asked something of you.",
         description: "Three hundred steps. Your legs will remind you of every single one. But the hill is green and alive around you, the city noise dropping away with each flight, and by the time you reach the top something has already shifted. The view opens without warning — Bologna below, soft and unhurried, San Luca sitting quietly on the opposite hill like it has always been waiting for you. Sit on the grass. Pour the wine. Tear the bread. Open the notebook. Up here, with the city small beneath you and the hills rolling on forever, the words come easier than they have in months. This is not a tourist spot. This is where Bolognesi come when they need to remember why they live here. Don't tell everyone.",
         lat: 44.4827,
         lng: 11.3150
@@ -153,6 +202,7 @@
         name: "Via Pescherie Vecchie",
         category: "Bologna Spot",
         image: "via-pescherie-vecchie.jpg",
+        challenge: "This is a dummy writing challenge. Pick one smell, one colour, one sound from this street. Write a scene — any scene, any character — where all three appear without being described directly.",
         description: "The light is changing. Leave Piazza Maggiore behind and walk east, into the narrow lanes of the Quadrilatero. You'll feel the shift immediately — the streets tighten, the air cools, the noise becomes something closer and more human. Enter through Via Pescherie Vecchie. The smell hits you first — fish, salt, something sweet from a stall around the corner. The vendors are winding down for the evening, stacking crates, calling to each other across the lane. Slow down. Look at the colours — the deep red of the mortadella, the pale yellow of fresh pasta draped over wooden rods, the waxy glow of aged Parmigiano under dim light. Let yourself get a little lost. Turn into Via Drapperie, then double back. Buy something — a small piece of cheese, a paper cone of olives, a glass of Pignoletto from a wine merchant who pours without asking. Find a doorstep or a low ledge and sit. The last of the sun is catching the rooftops. The street is thinning out, the noise softening. This is the hour when Bologna stops performing and just breathes. Open your notebook here. Not to plan, not to organise — just to catch what's dissolving. The light, the smell, the sound of a crate being dragged across stone. You don't need to make it into anything yet. Just write it down before it disappears.",
         lat: 44.4938,
         lng: 11.3447
@@ -180,37 +230,81 @@
       }
     ];
 
-    places.forEach(function(place) {
-      var marker = L.marker([place.lat, place.lng]).addTo(map);
+    function buildPopup(place) {
+      var id = 'popup-' + Math.random().toString(36).substr(2, 9);
+      var hasImage = !!place.image;
+      var hasChallenge = !!place.challenge;
 
-      var popupContent;
+      var tabs = '';
+      var contents = '';
 
-      if (place.image) {
-        popupContent =
-          "<div class='popup-card has-image'>" +
-            "<img src='" + place.image + "' alt='" + place.name + "'>" +
-            "<div class='popup-text'>" +
-              "<h3>" + place.name + "</h3>" +
-              "<div class='popup-category'>" + place.category + "</div>" +
-              "<p>" + place.description + "</p>" +
-            "</div>" +
-          "</div>";
-      } else {
-        popupContent =
-          "<div class='popup-card'>" +
-            "<div class='popup-text'>" +
-              "<h3>" + place.name + "</h3>" +
-              "<div class='popup-category'>" + place.category + "</div>" +
-              "<p>" + place.description + "</p>" +
-            "</div>" +
-          "</div>";
+      if (hasChallenge) {
+        tabs =
+          '<div class="popup-tabs">' +
+            '<div class="popup-tab active" onclick="switchTab(\'' + id + '\', \'place\')">📍 Place</div>' +
+            '<div class="popup-tab" onclick="switchTab(\'' + id + '\', \'challenge\')">✍️ Challenge</div>' +
+          '</div>';
       }
 
+      // Place tab content
+      if (hasImage) {
+        contents +=
+          '<div id="' + id + '-place" class="popup-tab-content active">' +
+            '<img src="' + place.image + '" alt="' + place.name + '">' +
+            '<div class="popup-text">' +
+              '<h3>' + place.name + '</h3>' +
+              '<div class="popup-category">' + place.category + '</div>' +
+              '<p>' + place.description + '</p>' +
+            '</div>' +
+          '</div>';
+      } else {
+        contents +=
+          '<div id="' + id + '-place" class="popup-tab-content active">' +
+            '<div class="popup-text">' +
+              '<h3>' + place.name + '</h3>' +
+              '<div class="popup-category">' + place.category + '</div>' +
+              '<p>' + place.description + '</p>' +
+            '</div>' +
+          '</div>';
+      }
+
+      // Challenge tab content
+      if (hasChallenge) {
+        contents +=
+          '<div id="' + id + '-challenge" class="popup-tab-content challenge-content">' +
+            '<div class="challenge-label">✍️ Writing Challenge</div>' +
+            '<div class="challenge-text">' + place.challenge + '</div>' +
+          '</div>';
+      }
+
+      return '<div class="popup-card ' + (hasImage ? 'has-image' : '') + '" id="' + id + '">' + tabs + contents + '</div>';
+    }
+
+    window.switchTab = function(id, tab) {
+      var card = document.getElementById(id);
+      if (!card) return;
+
+      // Update tab buttons
+      card.querySelectorAll('.popup-tab').forEach(function(t) {
+        t.classList.remove('active');
+      });
+      card.querySelectorAll('.popup-tab-content').forEach(function(c) {
+        c.classList.remove('active');
+      });
+
+      // Activate selected
+      var activeTab = card.querySelector('[onclick*="\'' + tab + '\'"]');
+      var activeContent = document.getElementById(id + '-' + tab);
+      if (activeTab) activeTab.classList.add('active');
+      if (activeContent) activeContent.classList.add('active');
+    };
+
+    places.forEach(function(place) {
+      var marker = L.marker([place.lat, place.lng]).addTo(map);
       var popupOptions = place.image
         ? { maxWidth: 520, minWidth: 420 }
         : { maxWidth: 300 };
-
-      marker.bindPopup(popupContent, popupOptions);
+      marker.bindPopup(buildPopup(place), popupOptions);
     });
   </script>
 </body>
