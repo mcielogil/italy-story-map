@@ -40,17 +40,22 @@
       margin-top: 4px;
     }
 
+    .leaflet-popup-content {
+      margin: 14px 16px;
+      width: 520px !important;
+    }
+
     .popup-card {
       display: flex;
-      gap: 12px;
+      gap: 14px;
       align-items: flex-start;
-      max-width: 420px;
-      min-width: 320px;
+      width: 100%;
+      max-width: 520px;
     }
 
     .popup-card img {
-      width: 140px;
-      height: 140px;
+      width: 190px;
+      height: 150px;
       object-fit: cover;
       border-radius: 10px;
       display: block;
@@ -59,25 +64,42 @@
 
     .popup-text {
       flex: 1;
+      min-width: 0;
     }
 
     .popup-text h3 {
       margin: 0 0 6px 0;
-      font-size: 16px;
-      line-height: 1.2;
+      font-size: 24px;
+      line-height: 1.15;
     }
 
     .popup-category {
-      font-size: 12px;
+      font-size: 13px;
       color: #777;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
       font-style: italic;
     }
 
     .popup-text p {
-      font-size: 13px;
-      line-height: 1.45;
       margin: 0;
+      font-size: 15px;
+      line-height: 1.55;
+      color: #222;
+    }
+
+    .simple-card h3 {
+      margin: 0 0 6px 0;
+      font-size: 20px;
+    }
+
+    .simple-card .popup-category {
+      margin-bottom: 8px;
+    }
+
+    .simple-card p {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.5;
     }
   </style>
 </head>
@@ -139,8 +161,8 @@
       {
         name: "Piazza Maggiore",
         category: "Bologna Spot",
-        image: "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=800&q=80",
-        description: "Sit on the worn stone steps at the edge of Piazza Maggiore and do nothing for a while. Let the square reveal itself slowly. Students cross in loose groups, a bicycle cuts through the open space, someone is always arriving, someone is always leaving. Stay long enough and the place begins to feel theatrical in the best way. A couple leans into a private conversation, a child runs ahead of distracted parents, a banner appears somewhere in the distance, then folds back into the ordinary rhythm of the city. This is not a place to hurry through. It is a place to observe youth, movement, tension, beauty, and the small human scenes that make a story feel alive.",
+        image: "piazza-maggiore.jpg",
+        description: "Sit on the stone steps and let the square unfold slowly. Students cross in groups, someone pauses mid-conversation, a bicycle cuts through the open space, and the whole plaza feels like a stage for ordinary life. Stay long enough and the details start writing the scene for you.",
         lat: 44.4937,
         lng: 11.3431
       },
@@ -169,7 +191,6 @@
 
     places.forEach(function(place) {
       var marker = L.marker([place.lat, place.lng]).addTo(map);
-
       var popupContent = "";
 
       if (place.image) {
@@ -184,12 +205,10 @@
           "</div>";
       } else {
         popupContent =
-          "<div class='popup-card'>" +
-            "<div class='popup-text'>" +
-              "<h3>" + place.name + "</h3>" +
-              "<div class='popup-category'>" + place.category + "</div>" +
-              "<p>" + place.description + "</p>" +
-            "</div>" +
+          "<div class='simple-card'>" +
+            "<h3>" + place.name + "</h3>" +
+            "<div class='popup-category'>" + place.category + "</div>" +
+            "<p>" + place.description + "</p>" +
           "</div>";
       }
 
