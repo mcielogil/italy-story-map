@@ -8,13 +8,13 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
   <style>
-    body { 
-      margin: 0; 
-      font-family: Arial, sans-serif; 
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
     }
 
-    #map { 
-      height: 100vh; 
+    #map {
+      height: 100vh;
     }
 
     #title-box {
@@ -26,6 +26,7 @@
       padding: 12px 16px;
       border-radius: 10px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+      max-width: 280px;
     }
 
     .title {
@@ -37,6 +38,30 @@
       font-size: 14px;
       color: #555;
       margin-top: 4px;
+    }
+
+    .popup-card {
+      max-width: 260px;
+    }
+
+    .popup-card img {
+      width: 100%;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .popup-card h3 {
+      margin: 0;
+      font-size: 16px;
+      line-height: 1.2;
+    }
+
+    .popup-card p {
+      font-size: 13px;
+      line-height: 1.45;
+      margin-top: 8px;
+      margin-bottom: 0;
     }
   </style>
 </head>
@@ -53,7 +78,7 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <script>
-    var map = L.map('map').setView([43.0, 12.5], 6);
+    var map = L.map('map').setView([43.8, 11.8], 6);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; OpenStreetMap contributors'
@@ -82,43 +107,77 @@
         lng: 12.3155
       },
       {
-  name: "Siena",
-  category: "Story Moment",
-  description: "A place where time feels slower and every street invites reflection.",
-  lat: 43.3188,
-  lng: 11.3308
-},
+        name: "Siena",
+        category: "Story Moment",
+        description: "A place where time feels slower and every street invites reflection.",
+        lat: 43.3188,
+        lng: 11.3308
+      },
       {
-  name: "Torno",
-  category: "Quiet Place",
-  description: "A small village on Lake Como where time feels suspended. Stone houses, narrow paths, and a stillness that pulls you inward.",
-  lat: 45.8619,
-  lng: 9.1168
-},
-        {
-    name: "Bologna",
-    category: "Story Moment",
-    description: "Long porticoes, warm light, and the feeling that life unfolds slowly but fully.",
-    lat: 44.4949,
-    lng: 11.3426
-  },
-  {
-    name: "Bari",
-    category: "Story Moment",
-    description: "Old women making pasta in the street, voices echoing through narrow alleys.",
-    lat: 41.1171,
-    lng: 16.8719
-  },
+        name: "Bologna",
+        category: "Story Moment",
+        description: `
+          <div class="popup-card">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Piazza_Maggiore_Bologna.jpg" alt="Piazza Maggiore, Bologna">
+            <h3>Piazza Maggiore</h3>
+            <p>
+              Sit on the worn stone steps at the edge of Piazza Maggiore and do nothing for a while.
+              Let the square reveal itself slowly. Students cross in loose groups, a bicycle slices through
+              the open space, someone is always arriving, someone is always leaving.
+              <br><br>
+              Stay long enough and the place begins to feel theatrical in the best way. A couple shares
+              a quiet conversation, a child runs ahead of distracted parents, a protest banner appears
+              in the distance, then dissolves back into the ordinary rhythm of the city.
+              <br><br>
+              This is not a place to hurry through. It is a place to watch life gather and scatter
+              at once. Sit there with your notebook, or without one. Observe the light changing on the
+              facades, the youth, the movement, the tiny fragments of other people's days. If you're
+              looking for a setting where a story could begin without announcing itself, this is one.
+            </p>
+          </div>
+        `,
+        lat: 44.4939,
+        lng: 11.3430
+      },
+      {
+        name: "Bari",
+        category: "Story Moment",
+        description: "Old women making pasta in the street, voices echoing through narrow alleys.",
+        lat: 41.1171,
+        lng: 16.8719
+      },
+      {
+        name: "Torno",
+        category: "Quiet Place",
+        description: "A small village on Lake Como where time feels suspended. Stone houses, narrow paths, and stillness that pulls you inward.",
+        lat: 45.8619,
+        lng: 9.1168
+      },
+      {
+        name: "Spello",
+        category: "Writing Spot",
+        description: "A quiet hill town where every street feels intentional. Flowers, silence, and the kind of beauty that slows your thoughts.",
+        lat: 42.9925,
+        lng: 12.6712
+      }
     ];
 
     places.forEach(function(place) {
       var marker = L.marker([place.lat, place.lng]).addTo(map);
 
-      marker.bindPopup(
-        "<b>" + place.name + "</b><br>" +
-        "<i>" + place.category + "</i><br>" +
-        place.description
-      );
+      var popupContent;
+
+      if (place.description.includes("popup-card")) {
+        popupContent = place.description;
+      } else {
+        popupContent =
+          "<div class='popup-card'>" +
+            "<h3>" + place.name + "</h3>" +
+            "<p><i>" + place.category + "</i><br>" + place.description + "</p>" +
+          "</div>";
+      }
+
+      marker.bindPopup(popupContent);
     });
   </script>
 
