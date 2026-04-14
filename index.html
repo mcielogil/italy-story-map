@@ -41,27 +41,43 @@
     }
 
     .popup-card {
-      max-width: 260px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      max-width: 420px;
+      min-width: 320px;
     }
 
     .popup-card img {
-      width: 100%;
-      border-radius: 8px;
-      margin-bottom: 8px;
+      width: 140px;
+      height: 140px;
+      object-fit: cover;
+      border-radius: 10px;
       display: block;
+      flex-shrink: 0;
     }
 
-    .popup-card h3 {
-      margin: 0;
+    .popup-text {
+      flex: 1;
+    }
+
+    .popup-text h3 {
+      margin: 0 0 6px 0;
       font-size: 16px;
       line-height: 1.2;
     }
 
-    .popup-card p {
+    .popup-category {
+      font-size: 12px;
+      color: #777;
+      margin-bottom: 8px;
+      font-style: italic;
+    }
+
+    .popup-text p {
       font-size: 13px;
       line-height: 1.45;
-      margin-top: 8px;
-      margin-bottom: 0;
+      margin: 0;
     }
   </style>
 </head>
@@ -115,29 +131,18 @@
       },
       {
         name: "Bologna",
-        category: "Story Moment",
-        description: `
-          <div class="popup-card">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Piazza_Maggiore_Bologna.jpg" alt="Piazza Maggiore, Bologna">
-            <h3>Piazza Maggiore</h3>
-            <p>
-              Sit on the worn stone steps at the edge of Piazza Maggiore and do nothing for a while.
-              Let the square reveal itself slowly. Students cross in loose groups, a bicycle slices through
-              the open space, someone is always arriving, someone is always leaving.
-              <br><br>
-              Stay long enough and the place begins to feel theatrical in the best way. A couple shares
-              a quiet conversation, a child runs ahead of distracted parents, a protest banner appears
-              in the distance, then dissolves back into the ordinary rhythm of the city.
-              <br><br>
-              This is not a place to hurry through. It is a place to watch life gather and scatter
-              at once. Sit there with your notebook, or without one. Observe the light changing on the
-              facades, the youth, the movement, the tiny fragments of other people's days. If you're
-              looking for a setting where a story could begin without announcing itself, this is one.
-            </p>
-          </div>
-        `,
-        lat: 44.4939,
-        lng: 11.3430
+        category: "City",
+        description: "A city of porticoes, students, political undercurrents, and beautiful restraint. The kind of place that feels lived in rather than staged.",
+        lat: 44.4949,
+        lng: 11.3426
+      },
+      {
+        name: "Piazza Maggiore",
+        category: "Bologna Spot",
+        image: "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=800&q=80",
+        description: "Sit on the worn stone steps at the edge of Piazza Maggiore and do nothing for a while. Let the square reveal itself slowly. Students cross in loose groups, a bicycle cuts through the open space, someone is always arriving, someone is always leaving. Stay long enough and the place begins to feel theatrical in the best way. A couple leans into a private conversation, a child runs ahead of distracted parents, a banner appears somewhere in the distance, then folds back into the ordinary rhythm of the city. This is not a place to hurry through. It is a place to observe youth, movement, tension, beauty, and the small human scenes that make a story feel alive.",
+        lat: 44.4937,
+        lng: 11.3431
       },
       {
         name: "Bari",
@@ -165,15 +170,26 @@
     places.forEach(function(place) {
       var marker = L.marker([place.lat, place.lng]).addTo(map);
 
-      var popupContent;
+      var popupContent = "";
 
-      if (place.description.includes("popup-card")) {
-        popupContent = place.description;
+      if (place.image) {
+        popupContent =
+          "<div class='popup-card'>" +
+            "<img src='" + place.image + "' alt='" + place.name + "'>" +
+            "<div class='popup-text'>" +
+              "<h3>" + place.name + "</h3>" +
+              "<div class='popup-category'>" + place.category + "</div>" +
+              "<p>" + place.description + "</p>" +
+            "</div>" +
+          "</div>";
       } else {
         popupContent =
           "<div class='popup-card'>" +
-            "<h3>" + place.name + "</h3>" +
-            "<p><i>" + place.category + "</i><br>" + place.description + "</p>" +
+            "<div class='popup-text'>" +
+              "<h3>" + place.name + "</h3>" +
+              "<div class='popup-category'>" + place.category + "</div>" +
+              "<p>" + place.description + "</p>" +
+            "</div>" +
           "</div>";
       }
 
