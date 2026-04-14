@@ -1,73 +1,70 @@
 <!DOCTYPE html>
 <html>
 <head>
-<div id="title-box">
-<div id="title-box">
-  <div class="title">Italy Story Map</div>
-  <div class="subtitle">A map of places that feel like a story</div>
-</div>  <div class="subtitle">A map of places that feel like a story</div>
-</div>  <meta charset="utf-8" />
+  <title>Italy Story Map</title>
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
-  .title {
-  font-size: 20px;
-  font-weight: bold;
-}
-
-.subtitle {
-  font-size: 14px;
-  color: #555;
-  margin-top: 4px;
-}
   <style>
-body { margin: 0; font-family: Arial, sans-serif; }
+    body { margin: 0; font-family: Arial, sans-serif; }
 
-#map { height: 100vh; }
+    #map { height: 100vh; }
 
-#title-box {
-  position: absolute;
-  top: 16px;
-  left: 16px;
-  z-index: 1000;
-  background: white;
-  padding: 12px 16px;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.15);
-  font-size: 20px;
-  font-weight: bold;
-}
+    #title-box {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      z-index: 1000;
+      background: white;
+      padding: 12px 16px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+    }
+
+    .title {
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: #555;
+      margin-top: 4px;
+    }
   </style>
 </head>
+
 <body>
 
 <div id="title-box">
-  Italy Story Map
+  <div class="title">Italy Story Map</div>
+  <div class="subtitle">A map of places that feel like a story</div>
 </div>
+
 <div id="map"></div>
+
 <!-- Leaflet JS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
 <script>
-  // Create map centered in Italy
   var map = L.map('map').setView([43.0, 12.5], 6);
 
-  // Add OpenStreetMap tiles
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '&copy; OpenStreetMap contributors'
   }).addTo(map);
 
-  // Florence
   var marker1 = L.marker([43.7696, 11.2558]).addTo(map);
-marker1.bindPopup("<b>Florence</b><br>You walk at sunrise before the crowds arrive. The city is quiet, almost suspended. This is where you’d start your novel.");
-  // Rome
+  marker1.bindPopup("<b>Florence</b><br>You walk at sunrise before the crowds arrive. This is where you'd start your novel.");
+
   var marker2 = L.marker([41.9028, 12.4964]).addTo(map);
-marker2.bindPopup("<b>Rome</b><br>You sit at a small table in Trastevere, writing between bites. The noise, the chaos, somehow it all becomes part of your story.");
-  // Venice
+  marker2.bindPopup("<b>Rome</b><br>You sit in Trastevere writing between bites. Chaos becomes part of your story.");
+
   var marker3 = L.marker([45.4408, 12.3155]).addTo(map);
-marker3.bindPopup("<b>Venice</b><br>You get lost on purpose. Every corner feels unreal. This is where your story turns strange, dreamlike.");</script>
+  marker3.bindPopup("<b>Venice</b><br>You get lost on purpose. Everything feels dreamlike.");
+</script>
 
 </body>
 </html>
