@@ -46,13 +46,13 @@
       flex-direction: row;
       gap: 12px;
       align-items: flex-start;
-      max-width: 460px;
-      min-width: 380px;
+      max-width: 480px;
+      min-width: 400px;
     }
 
     .popup-card.has-image img {
-      width: 150px;
-      height: 150px;
+      width: 180px;
+      height: 220px;
       object-fit: cover;
       border-radius: 8px;
       flex-shrink: 0;
@@ -137,7 +137,7 @@
         name: "Piazza Maggiore",
         category: "Bologna Spot",
         image: "piazza-maggiore.jpg",
-        description: "Sit on the worn stone steps at the edge of Piazza Maggiore and do nothing for a while. Let the square reveal itself slowly. Students cross in loose groups, a bicycle cuts through the open space, someone is always arriving, someone is always leaving. Stay long enough and the place begins to feel theatrical in the best way. This is not a place to hurry through. It is a place to observe youth, movement, tension, beauty, and the small human scenes that make a story feel alive.",
+        description: "The stone is cold under your hands. The square is wide and unhurried and full of light that seems to come from everywhere at once. A bicycle passes close. Voices drift without landing. Someone laughs — you don't see who. You came here to write but you don't write yet. You just sit. And something, quietly, begins to loosen. The kind of loosening you didn't know you needed until it happens. Stay. Order a coffee you don't drink. Watch a stranger read. This is where the good ideas come from — not from trying, but from this. From sitting in a square that has been holding people together for five hundred years and finally letting it hold you too.",
         lat: 44.4937,
         lng: 11.3431
       },
@@ -191,7 +191,7 @@
       }
 
       var popupOptions = place.image
-        ? { maxWidth: 500, minWidth: 400 }
+        ? { maxWidth: 520, minWidth: 420 }
         : { maxWidth: 300 };
 
       marker.bindPopup(popupContent, popupOptions);
